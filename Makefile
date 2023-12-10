@@ -1,3 +1,3 @@
 PHONY:dev
 dev:
-	poetry run python block_chain/main.py
+	poetry run python blockchain/main.py
