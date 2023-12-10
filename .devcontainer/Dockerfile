@@ -7,23 +7,23 @@ ARG USER=vscode
 RUN DEBIAN_FRONTEND=noninteractive \
     && apt-get update \ 
     && apt-get install -y build-essential --no-install-recommends make \
-        ca-certificates \
-        git \
-        libssl-dev \
-        zlib1g-dev \
-        libbz2-dev \
-        libreadline-dev \
-        libsqlite3-dev \
-        wget \
-        curl \
-        llvm \
-        libncurses5-dev \
-        xz-utils \
-        tk-dev \
-        libxml2-dev \
-        libxmlsec1-dev \
-        libffi-dev \
-        liblzma-dev
+    ca-certificates \
+    git \
+    libssl-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    wget \
+    curl \
+    llvm \
+    libncurses5-dev \
+    xz-utils \
+    tk-dev \
+    libxml2-dev \
+    libxmlsec1-dev \
+    libffi-dev \
+    liblzma-dev
 
 # Python and poetry installation
 USER $USER
@@ -43,3 +43,5 @@ RUN echo "done 0" \
     && echo "done 3" \
     && curl -sSL https://install.python-poetry.org | python3 - \
     && poetry config virtualenvs.in-project true
+
+RUN echo "source /usr/share/bash-completion/completions/git" >> ~/.bashrc
