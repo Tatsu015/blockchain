@@ -16,11 +16,12 @@ class Transaction:
 
 def new_transaction(from_secret_key:str, to_public_key:str, amount:int)->Transaction:
     from_sec_key = SigningKey.from_string(binascii.unhexlify(from_secret_key), curve=SECP256k1)
-    from_pub_key = from_sec_key.verifying_key
+    from_pub_key = from_sec_key.verifying_key.to_string().hex()
 
     now = datetime.datetime.now(datetime.timezone.utc).isoformat()
     unsigned = {"time":now, "sender":from_pub_key, "receiver":to_public_key, "amount":amount}
-    s = from_sec_key.sign(json.dump(unsigned)).encode('utf-8').hex()
+   
+    s = from_sec_key.sign(json.dumps(unsigned).encode('utf-8')).hex()
 
     t = Transaction(now, from_sec_key,to_public_key, amount, s)
     return t
