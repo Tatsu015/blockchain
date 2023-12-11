@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "block-chain"
+name = "blockchain"
 version = "0.1.0"
 description = ""
 authors = ["Tatsu015 <tatsumi.soichiro@gmail.com>"]
