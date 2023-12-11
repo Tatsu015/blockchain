@@ -1,5 +1,5 @@
 import datetime
-from ecdsa import SigningKey, SECP256k1, BadDigestError
+from ecdsa import SigningKey, SECP256k1, BadSignatureError
 from dataclasses import dataclass
 
 
@@ -29,5 +29,5 @@ print("signature", signature.hex())
 try:
     public_key.verify(signature, doc.encode("utf-8"))
     print("not falsificated")
-except BadDigestError:
+except BadSignatureError:
     print("falsificated")
