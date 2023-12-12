@@ -31,25 +31,3 @@ to_public_key = "b2ec566cff3702724e86ef6fa0d36835d6d5153ff402bca6dc976b7dc308f4b
 t = new_transaction(from_secret_key, to_public_key, 1)
 
 pd.to_pickle(t, "signed_transaction.pkl")
-
-# t1 = Transaction(datetime.datetime.now(), "A", "B", 1)
-# t2 = Transaction(datetime.datetime.now(), "C", "D", 3)
-# transactions = [t1, t2]
-# print(transactions)
-
-# secret_key = SigningKey.generate(curve=SECP256k1)
-# print("secret key", secret_key.to_string().hex())
-# public_key = secret_key.verifying_key
-# print("public key", public_key.to_string().hex())
-
-# doc = "very important data"
-# signature = secret_key.sign(doc.encode("utf-8"))
-# print("signature", signature.hex())
-
-
-# doc = "aaa"
-# try:
-#     public_key.verify(signature, doc.encode("utf-8"))
-#     print("not falsificated")
-# except BadSignatureError:
-#     print("falsificated")
