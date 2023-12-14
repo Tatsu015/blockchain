@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from ecdsa import SigningKey, SECP256k1, BadSignatureError, VerifyingKey
+from ecdsa import SECP256k1, BadSignatureError, VerifyingKey
 import binascii
 import json
 import os
