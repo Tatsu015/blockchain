@@ -1,9 +1,11 @@
 import datetime
 import pandas as pd
 import json
-from ecdsa import SigningKey, SECP256k1
+from ecdsa import SigningKey, SECP256k1, VerifyingKey, BadSignatureError
 import binascii
 from dataclasses import dataclass, asdict
+from pydantic import BaseModel
+from fastapi import FastAPI
 
 
 @dataclass(frozen=True)
@@ -18,8 +20,8 @@ class UnsignedTransaction:
 
 
 @dataclass(frozen=True)
-class Transaction:
-    time: datetime
+class Transaction(BaseModel):
+    time: datetime  # TODO need to modify type schema
     sender: str
     receiver: str
     amount: int
@@ -27,6 +29,20 @@ class Transaction:
 
     def to_unsigned(self) -> UnsignedTransaction:
         return UnsignedTransaction(self.time, self.sender, self.receiver, self.amount)
+
+    def verify(self) -> bool:
+        from_pub_key = VerifyingKey.from_string(
+            binascii.unhexlify(self.sender), curve=SECP256k1
+        )
+
+        signature = binascii.unhexlify(self.signature)
+        unsigned = self.to_unsigned().to_dict()
+        try:
+            from_pub_key.verify(signature, json.dumps(unsigned).encode("utf-8"))
+            return True
+        except BadSignatureError as e:
+            print(e)
+            return False
 
 
 def new_transaction(
@@ -46,18 +62,28 @@ def new_transaction(
     }
 
     s = from_sec_key.sign(json.dumps(unsigned).encode("utf-8")).hex()
-
     t = Transaction(now, from_pub_key, to_public_key, amount, s)
     return t
 
 
-def main():
-    from_secret_key = "9a77f929737b0b2e90090afc57685d734735052deab172aa5228aa65ee0fcbd2"
-    to_public_key = "b2ec566cff3702724e86ef6fa0d36835d6d5153ff402bca6dc976b7dc308f4bebeda361ae3267d0c3818ca001478f8ac8eb07908ed2e2c4b76cbcfd49720d4dd"
-    t = new_transaction(from_secret_key, to_public_key, 1)
+app = FastAPI()
 
-    pd.to_pickle(t, "signed_transaction.pkl")
+transaction_pool = {"transaction": []}
 
 
-if __name__ == "__main__":
-    main()
+@app.get("/")
+def root():
+    return {"message": "ok"}
+
+
+# @app.get("/api/transaction_pool")
+# def get_transaction_pool():
+#     return transaction_pool
+
+
+# @app.post("/api/transaction_pool")
+# def post_transaction_pool(transaction: Transaction):
+#     if transaction.verify():
+#         transaction_pool["transaction"].append(transaction.model_dump())
+
+#     return {"message": "Transaction is posted"}
