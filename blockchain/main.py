@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import pandas as pd
 import json
 from ecdsa import SigningKey, SECP256k1, VerifyingKey, BadSignatureError
@@ -21,7 +21,7 @@ class UnsignedTransaction:
 
 @dataclass(frozen=True)
 class Transaction(BaseModel):
-    time: datetime  # TODO need to modify type schema
+    time: datetime
     sender: str
     receiver: str
     amount: int
@@ -76,14 +76,14 @@ def root():
     return {"message": "ok"}
 
 
-# @app.get("/api/transaction_pool")
-# def get_transaction_pool():
-#     return transaction_pool
+@app.get("/api/transaction_pool")
+def get_transaction_pool():
+    return transaction_pool
 
 
-# @app.post("/api/transaction_pool")
-# def post_transaction_pool(transaction: Transaction):
-#     if transaction.verify():
-#         transaction_pool["transaction"].append(transaction.model_dump())
+@app.post("/api/transaction_pool")
+def post_transaction_pool(transaction: Transaction):
+    if transaction.verify():
+        transaction_pool["transaction"].append(transaction.model_dump())
 
-#     return {"message": "Transaction is posted"}
+    return {"message": "Transaction is posted"}
