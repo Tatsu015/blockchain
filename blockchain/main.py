@@ -1,5 +1,4 @@
-from datetime import datetime
-import pandas as pd
+from datetime import datetime, timezone
 import json
 from ecdsa import SigningKey, SECP256k1, VerifyingKey, BadSignatureError
 import binascii
@@ -30,6 +29,9 @@ class Transaction(BaseModel):
     def to_unsigned(self) -> UnsignedTransaction:
         return UnsignedTransaction(self.time, self.sender, self.receiver, self.amount)
 
+    def to_dict(self) -> dict:
+        return asdict(self)
+
     def verify(self) -> bool:
         from_pub_key = VerifyingKey.from_string(
             binascii.unhexlify(self.sender), curve=SECP256k1
@@ -53,7 +55,7 @@ def new_transaction(
     )
     from_pub_key = from_sec_key.verifying_key.to_string().hex()
 
-    now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     unsigned = {
         "time": now,
         "sender": from_pub_key,
@@ -76,14 +78,16 @@ def root():
     return {"message": "ok"}
 
 
-@app.get("/api/transaction_pool")
+@app.get("/transaction_pool")
 def get_transaction_pool():
     return transaction_pool
 
 
-@app.post("/api/transaction_pool")
+@app.post("/transaction_pool")
 def post_transaction_pool(transaction: Transaction):
+    print("=========================")
     if transaction.verify():
-        transaction_pool["transaction"].append(transaction.model_dump())
+        print("=========================")
+    #     transaction_pool["transaction"].append(transaction)
 
-    return {"message": "Transaction is posted"}
+    # return {"message": "Transaction is posted"}
