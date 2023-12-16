@@ -21,7 +21,8 @@
 				"njpwerner.autodocstring",
 				"ms-python.black-formatter",
 				"ms-vscode.makefile-tools",
-				"ms-azuretools.vscode-docker"
+				"ms-azuretools.vscode-docker",
+				"LittleFoxTeam.vscode-python-test-adapter"
 			]
             }
         }
