@@ -20,9 +20,7 @@ def get_transaction_pool():
 
 @app.post("/transaction_pool")
 def post_transaction_pool(transaction: Transaction):
-    print("=========================")
     if transaction.verify():
-        print("=========================")
-    #     transaction_pool["transaction"].append(transaction)
+        transaction_pool["transaction"].append(transaction)
 
-    # return {"message": "Transaction is posted"}
+    return {"message": "Transaction is posted"}

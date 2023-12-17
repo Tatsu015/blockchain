@@ -4,38 +4,52 @@ from ecdsa import SECP256k1, BadSignatureError, VerifyingKey
 import binascii
 import json
 import os
-from blockchain.main import Transaction, new_transaction
+from datetime import datetime
+from dataclasses import dataclass, asdict
 
-PKL_FILE_PATH = "test_signed_transaction.pkl"
+from blockchain.transaction import Transaction, new_transaction
+
+from pydantic import BaseModel, Field
+from datetime import datetime
+
+DB_FILE_PATH = "test_signed_transaction.db"
+FROM_SELECT_KEY = "9a77f929737b0b2e90090afc57685d734735052deab172aa5228aa65ee0fcbd2"
+TO_PUBLIC_KEY = "b2ec566cff3702724e86ef6fa0d36835d6d5153ff402bca6dc976b7dc308f4bebeda361ae3267d0c3818ca001478f8ac8eb07908ed2e2c4b76cbcfd49720d4dd"
+time = datetime(2023, 12, 23, 11, 23, 45, 67)
 
 
 @pytest.fixture
 def setup_transaction():
-    from_secret_key = "9a77f929737b0b2e90090afc57685d734735052deab172aa5228aa65ee0fcbd2"
-    to_public_key = "b2ec566cff3702724e86ef6fa0d36835d6d5153ff402bca6dc976b7dc308f4bebeda361ae3267d0c3818ca001478f8ac8eb07908ed2e2c4b76cbcfd49720d4dd"
-    t = new_transaction(from_secret_key, to_public_key, 1)
-    pd.to_pickle(t, PKL_FILE_PATH)
+    t = new_transaction(time, FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
+    pd.to_pickle(t, DB_FILE_PATH)
 
     yield
 
-    os.remove(PKL_FILE_PATH)
+    os.remove(DB_FILE_PATH)
+
+
+def test_transaction_json():
+    transaction = new_transaction(time, FROM_SELECT_KEY, TO_PUBLIC_KEY, 12)
+    sat = transaction.model_dump_json()
+    expect = '{"time":"2023-12-23T11:23:45.000067","sender":"5a43cd741ce01c9241e1071662cc85740d2331c80d2a2d6b32742b677496cad8fa69f64a54e3c61240d1a98ee3fd1be7ad02dd423156d448f9f7efa356a43369","receiver":"b2ec566cff3702724e86ef6fa0d36835d6d5153ff402bca6dc976b7dc308f4bebeda361ae3267d0c3818ca001478f8ac8eb07908ed2e2c4b76cbcfd49720d4dd","amount":12,"signature":"'
+    assert expect in sat
 
 
 def test_normal_transaction(setup_transaction):
-    sat: Transaction = pd.read_pickle(PKL_FILE_PATH)
+    sat: Transaction = pd.read_pickle(DB_FILE_PATH)
     from_pub_key = VerifyingKey.from_string(
         binascii.unhexlify(sat.sender), curve=SECP256k1
     )
     signature = binascii.unhexlify(sat.signature)
-    unsigned = sat.to_unsigned().to_dict()
+    unsigned_json = sat.to_unsigned().model_dump_json()
 
-    from_pub_key.verify(signature, json.dumps(unsigned).encode("utf-8"))
+    from_pub_key.verify(signature, unsigned_json.encode("utf-8"))
 
     assert True is True
 
 
 def test_falsification_transaction(setup_transaction):
-    transaction: Transaction = pd.read_pickle(PKL_FILE_PATH)
+    transaction: Transaction = pd.read_pickle(DB_FILE_PATH)
     sat = Transaction(
         transaction.time,
         transaction.sender,
