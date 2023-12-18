@@ -5,3 +5,7 @@ dev:
 PHONY:test
 test:
 	poetry run pytest
+
+PHONY:dev_post
+dev_post:
+	poetry run python blockchain/post.py
