@@ -30,7 +30,7 @@ class Transaction(BaseModel):
         )
 
         signature = binascii.unhexlify(self.signature)
-        unsigned_json = self.to_unsigned().model_dump_json()
+        unsigned_json = self.to_unsigned().model_dump_json().encode("utf-8")
         try:
             from_pub_key.verify(signature, unsigned_json)
             return True
