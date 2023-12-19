@@ -28,7 +28,6 @@ def get_transaction_pool():
 
 @app.post("/transaction_pool")
 def post_transaction_pool(transaction: Transaction):
-    print("post data:", transaction)
     if transaction.verify():
         transaction_pool["transaction"].append(transaction)
 
