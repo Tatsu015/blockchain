@@ -8,7 +8,7 @@ test:
 
 PHONY:dev_post
 dev_post:
-	poetry run python blockchain/post.py
+	poetry run python post.py
 
 PHONY:dev_get
 dev_get:
