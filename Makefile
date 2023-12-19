@@ -9,3 +9,7 @@ test:
 PHONY:dev_post
 dev_post:
 	poetry run python blockchain/post.py
+
+PHONY:dev_get
+dev_get:
+	curl http://127.0.0.1:8080/transaction_pool
