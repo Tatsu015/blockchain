@@ -8,7 +8,7 @@ from datetime import datetime
 from dataclasses import dataclass, asdict
 
 from blockchain.transaction import Transaction, new_transaction
-from blockchain.transaction_repository import TransactionRepository
+from blockchain.blockchain_repository import TransactionRepository
 
 from pydantic import BaseModel, Field
 from datetime import datetime

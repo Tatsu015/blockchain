@@ -1,0 +1,53 @@
+import json
+from blockchain.transaction import Transaction
+from blockchain.blockchain import BlockChain
+from dataclasses import dataclass
+from pydantic import BaseModel
+
+
+@dataclass
+class Transactions(BaseModel):
+    transactions: list[Transaction]
+
+
+class TransactionRepository:
+    def __init__(self, path):
+        self.path = path
+
+        try:
+            with open(self.path, "r") as file:
+                json_data = json.load(file)
+                self.block_chain = BlockChain.model_validate_json(json_data)
+                return self.block_chain
+
+        except FileNotFoundError as e:
+            print(e)
+
+    def queryAll(self) -> Transaction:
+        try:
+            with open(self.path, "r") as file:
+                json_data = json.load(file)
+                transactions = Transactions.model_validate_json(json_data)
+                return transactions
+
+        except (FileNotFoundError, ValueError) as e:
+            print(e)
+
+    def query(self, id: int) -> Transaction:
+        try:
+            transactions = self.queryAll()
+            transaction = next((x for x in transactions if x.id == id), None)
+            return transaction
+
+        except (FileNotFoundError, ValueError) as e:
+            print(e)
+
+    # def save(self):
+    #     with open(self.path, "w") as file:
+    #         json_data = self.block_chain.model_dump_json()
+    #         json.dump(json_data, file, default=str)
+
+    #     return
+
+    # def add(self, transaction: Transaction):
+    #     self.block_chain.add(transaction)
