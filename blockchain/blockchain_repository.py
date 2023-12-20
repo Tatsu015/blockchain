@@ -23,7 +23,7 @@ class TransactionRepository:
         except FileNotFoundError as e:
             print(e)
 
-    def queryAll(self) -> Transaction:
+    def queryAll(self) -> list[Transaction]:
         try:
             with open(self.path, "r") as file:
                 json_data = json.load(file)
@@ -33,21 +33,25 @@ class TransactionRepository:
         except (FileNotFoundError, ValueError) as e:
             print(e)
 
-    def query(self, id: int) -> Transaction:
+    # def query(self, id: int) -> Transaction:
+    #     try:
+    #         transactions = self.queryAll()
+    #         transaction = next((x for x in transactions if x.id == id), None)
+    #         return transaction
+
+    #     except (FileNotFoundError, ValueError) as e:
+    #         print(e)
+
+    def add(self, transaction: Transaction):
         try:
-            transactions = self.queryAll()
-            transaction = next((x for x in transactions if x.id == id), None)
-            return transaction
+            with open(self.path, "r") as file:
+                json_data = json.load(file)
+                transactions = Transactions.model_validate_json(json_data)
+                transactions.transactions.append(transaction)
 
-        except (FileNotFoundError, ValueError) as e:
+            with open(self.path, "w") as file:
+                json_data = transactions.model_dump_json()
+                json.dump(json_data, file, default=str)
+
+        except FileNotFoundError as e:
             print(e)
-
-    # def save(self):
-    #     with open(self.path, "w") as file:
-    #         json_data = self.block_chain.model_dump_json()
-    #         json.dump(json_data, file, default=str)
-
-    #     return
-
-    # def add(self, transaction: Transaction):
-    #     self.block_chain.add(transaction)

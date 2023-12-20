@@ -15,7 +15,6 @@ class UnsignedTransaction(BaseModel):
 
 @dataclass(frozen=True)
 class Transaction(BaseModel):
-    id: int
     time: datetime
     sender: str
     receiver: str
