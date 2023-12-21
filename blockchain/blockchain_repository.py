@@ -1,6 +1,5 @@
 import json
 from blockchain.transaction import Transaction
-from blockchain.blockchain import BlockChain
 from dataclasses import dataclass
 from pydantic import BaseModel
 
@@ -14,23 +13,17 @@ class TransactionRepository:
     def __init__(self, path):
         self.path = path
 
-        try:
-            with open(self.path, "r") as file:
-                json_data = json.load(file)
-                self.block_chain = BlockChain.model_validate_json(json_data)
-                return self.block_chain
-
-        except FileNotFoundError as e:
-            print(e)
-
     def queryAll(self) -> list[Transaction]:
         try:
             with open(self.path, "r") as file:
                 json_data = json.load(file)
                 transactions = Transactions.model_validate_json(json_data)
                 return transactions
+        except FileNotFoundError as e:
+            print("file not found. create new data")
+            return []
 
-        except (FileNotFoundError, ValueError) as e:
+        except ValueError as e:
             print(e)
 
     # def query(self, id: int) -> Transaction:

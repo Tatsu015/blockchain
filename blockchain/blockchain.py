@@ -1,13 +1,26 @@
-from blockchain.transaction import Transaction
 from pydantic import BaseModel
+from blockchain.transaction import Transaction
+from blockchain.blockchain_repository import TransactionRepository
 
 
 class BlockChain(BaseModel):
-    def __init__(self):
-        self.transactions: list[Transaction]
+    repository: TransactionRepository
 
     def add(self, transaction: Transaction) -> bool:
-        if transaction in self.transactions:
+        try:
+            transactions = self.repository.queryAll()
+        except Exception as e:
+            print(e)
+            return
+        if transaction in transactions:
             return False
-        self.transactions.append(transaction)
+
+        self.repository.add(transaction)
         return True
+
+    def get_transactions(self) -> list[Transaction]:
+        try:
+            return self.repository.queryAll()
+        except Exception as e:
+            print(e)
+            return []
