@@ -7,7 +7,7 @@ import os
 from datetime import datetime
 
 from blockchain.transaction import Transaction, new_transaction
-from blockchain.blockchain import BlockChain
+from blockchain.blockchain import BlockChain, TransactionReuseError
 
 
 FROM_SELECT_KEY = "9a77f929737b0b2e90090afc57685d734735052deab172aa5228aa65ee0fcbd2"
@@ -36,18 +36,8 @@ def test_restore_transactions():
 def test_add_same_transaction_not_accept():
     t = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
     blockChain = BlockChain()
+    blockChain.append(t)
 
-    assert True == blockChain.append(t)
-    assert False == blockChain.append(t)
-    ts = blockChain.get_transactions()
-    t1 = ts[0]
-
-    # about t1
-    from_pub_key1 = VerifyingKey.from_string(
-        binascii.unhexlify(t1.sender), curve=SECP256k1
-    )
-    signature1 = binascii.unhexlify(t1.signature)
-    unsigned_json1 = t1.to_unsigned().model_dump_json()
-    from_pub_key1.verify(signature1, unsigned_json1.encode("utf-8"))
-
-    assert True is True
+    with pytest.raises(TransactionReuseError) as e:
+        blockChain.append(t)
+    assert str(e.value) == "transaction already appended"

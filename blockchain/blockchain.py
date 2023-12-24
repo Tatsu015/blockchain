@@ -3,6 +3,10 @@ from pydantic import BaseModel
 from blockchain.transaction import Transaction
 
 
+class TransactionReuseError(Exception):
+    pass
+
+
 class BlockChain(BaseModel):
     transactions: list[Transaction] = []
 
@@ -22,12 +26,11 @@ class BlockChain(BaseModel):
             json_data = self.model_dump_json()
             json.dump(json_data, file, default=str)
 
-    def append(self, transaction: Transaction) -> bool:
+    def append(self, transaction: Transaction):
         if transaction in self.transactions:
-            return False
+            raise TransactionReuseError("transaction already appended")
 
         self.transactions.append(transaction)
-        return True
 
     def get_transactions(self) -> list[Transaction]:
         return self.transactions
