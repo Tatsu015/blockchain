@@ -25,6 +25,10 @@ class Transaction(BaseModel):
         return UnsignedTransaction(self.time, self.sender, self.receiver, self.amount)
 
     def verify(self) -> bool:
+        if self.amount <= 0:
+            print("less than 0 amount not arrowed")
+            return False
+
         from_pub_key = VerifyingKey.from_string(
             binascii.unhexlify(self.sender), curve=SECP256k1
         )

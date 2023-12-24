@@ -57,3 +57,13 @@ def test_falsification_transaction():
         from_pub_key.verify(fals_signature, json.dumps(fals_unsigned).encode("utf-8"))
 
     assert str(e.value) == "Signature verification failed"
+
+
+def test_less_than_zero_amount_transaction():
+    sat1 = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 0)
+    sat2 = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, -1)
+    sat3 = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
+
+    assert False == sat1.verify()
+    assert False == sat2.verify()
+    assert True == sat3.verify()
