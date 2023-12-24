@@ -2,7 +2,7 @@ from datetime import datetime
 from ecdsa import SigningKey, SECP256k1, VerifyingKey, BadSignatureError
 import binascii
 from dataclasses import dataclass
-from pydantic import BaseModel, PrivateAttr
+from pydantic import BaseModel
 
 
 @dataclass(frozen=True)
