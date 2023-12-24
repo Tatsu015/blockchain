@@ -5,6 +5,10 @@ from dataclasses import dataclass
 from pydantic import BaseModel
 
 
+class NonPositiveAmountTransactionError(Exception):
+    pass
+
+
 @dataclass(frozen=True)
 class UnsignedTransaction(BaseModel):
     time: datetime
@@ -24,10 +28,11 @@ class Transaction(BaseModel):
     def to_unsigned(self) -> UnsignedTransaction:
         return UnsignedTransaction(self.time, self.sender, self.receiver, self.amount)
 
-    def verify(self) -> bool:
+    def verify(self):
         if self.amount <= 0:
-            print("less than 0 amount not arrowed")
-            return False
+            raise NonPositiveAmountTransactionError(
+                f"less than 0 amount not allowed:{self.amount}"
+            )
 
         from_pub_key = VerifyingKey.from_string(
             binascii.unhexlify(self.sender), curve=SECP256k1
@@ -35,12 +40,7 @@ class Transaction(BaseModel):
 
         signature = binascii.unhexlify(self.signature)
         unsigned_json = self.to_unsigned().model_dump_json().encode("utf-8")
-        try:
-            from_pub_key.verify(signature, unsigned_json)
-            return True
-        except BadSignatureError as e:
-            print(e)
-            return False
+        from_pub_key.verify(signature, unsigned_json)
 
 
 def new_transaction(

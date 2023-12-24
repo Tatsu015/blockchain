@@ -28,7 +28,10 @@ def get_transaction_pool():
 
 @app.post("/transaction_pool")
 def post_transaction_pool(transaction: Transaction):
-    if transaction.verify():
-        transaction_pool["transaction"].append(transaction)
+    try:
+        transaction.verify()
+    except Exception as e:
+        return {"message": e.value}
 
+    transaction_pool["transaction"].append(transaction)
     return {"message": "Transaction is posted"}

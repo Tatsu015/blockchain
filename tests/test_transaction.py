@@ -5,7 +5,11 @@ import binascii
 import json
 from datetime import datetime
 
-from blockchain.transaction import Transaction, new_transaction
+from blockchain.transaction import (
+    NonPositiveAmountTransactionError,
+    Transaction,
+    new_transaction,
+)
 
 
 FROM_SELECT_KEY = "9a77f929737b0b2e90090afc57685d734735052deab172aa5228aa65ee0fcbd2"
@@ -64,6 +68,14 @@ def test_less_than_zero_amount_transaction():
     sat2 = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, -1)
     sat3 = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
 
-    assert False == sat1.verify()
-    assert False == sat2.verify()
-    assert True == sat3.verify()
+    with pytest.raises(NonPositiveAmountTransactionError) as e:
+        sat1.verify()
+    assert str(e.value) == "less than 0 amount not allowed:0"
+
+    with pytest.raises(NonPositiveAmountTransactionError) as e:
+        sat2.verify()
+    assert str(e.value) == "less than 0 amount not allowed:-1"
+
+    # sat3 has no exception
+    sat3.verify()
+    assert True == True
