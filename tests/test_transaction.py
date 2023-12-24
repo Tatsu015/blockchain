@@ -53,21 +53,17 @@ def test_restore_transactions():
     os.remove(TRANSACTIONS_FILE_PATH)
 
 
-# def test_normal_transaction(setup_transaction):
-#     blockChain = BlockChain()
-#     blockChain.load(TRANSACTIONS_FILE_PATH)
-#     transactions = blockChain.get_transactions()
-#     sat = transactions[0]
-#     from_pub_key = VerifyingKey.from_string(
-#         binascii.unhexlify(sat.sender), curve=SECP256k1
-#     )
-#     signature = binascii.unhexlify(sat.signature)
-#     unsigned_json = sat.to_unsigned().model_dump_json()
-#     print(unsigned_json)
+def test_normal_transaction(setup_transaction):
+    sat = new_transaction(time, FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
+    from_pub_key = VerifyingKey.from_string(
+        binascii.unhexlify(sat.sender), curve=SECP256k1
+    )
+    signature = binascii.unhexlify(sat.signature)
+    unsigned_json = sat.to_unsigned().model_dump_json()
 
-#     from_pub_key.verify(signature, unsigned_json.encode("utf-8"))
+    from_pub_key.verify(signature, unsigned_json.encode("utf-8"))
 
-#     assert True is True
+    assert True is True
 
 
 # def test_falsification_transaction(setup_transaction):
