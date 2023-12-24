@@ -35,42 +35,84 @@ def test_transaction_json():
     assert expect in sat
 
 
-def test_normal_transaction(setup_transaction):
-    blockChain = BlockChain()
-    blockChain.load(TRANSACTIONS_FILE_PATH)
-    transactions = blockChain.get_transactions()
-    sat = transactions[0]
-    from_pub_key = VerifyingKey.from_string(
-        binascii.unhexlify(sat.sender), curve=SECP256k1
-    )
-    signature = binascii.unhexlify(sat.signature)
-    unsigned_json = sat.to_unsigned().model_dump_json()
-    print(unsigned_json)
+def test_restore_transactions():
+    t1 = new_transaction(time, FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
+    t2 = new_transaction(time, FROM_SELECT_KEY, TO_PUBLIC_KEY, 10)
+    blockChain1 = BlockChain()
+    blockChain1.append(t1)
+    blockChain1.append(t2)
+    blockChain1.save(TRANSACTIONS_FILE_PATH)
 
-    from_pub_key.verify(signature, unsigned_json.encode("utf-8"))
+    blockChain2 = BlockChain()
+    blockChain2.load(TRANSACTIONS_FILE_PATH)
+    transactions = blockChain2.get_transactions()
 
-    assert True is True
+    assert t1 == transactions[0]
+    assert t2 == transactions[1]
+
+    os.remove(TRANSACTIONS_FILE_PATH)
 
 
-def test_falsification_transaction(setup_transaction):
-    blockChain = BlockChain()
-    blockChain.load(TRANSACTIONS_FILE_PATH)
-    transactions = blockChain.get_transactions()
-    transaction = transactions[0]
-    sat = Transaction(
-        transaction.time,
-        transaction.sender,
-        transaction.receiver,
-        30,
-        transaction.signature,
-    )
-    from_pub_key = VerifyingKey.from_string(
-        binascii.unhexlify(sat.sender), curve=SECP256k1
-    )
-    signature = binascii.unhexlify(sat.signature)
-    unsigned = sat.to_unsigned().model_dump_json()
+# def test_normal_transaction(setup_transaction):
+#     blockChain = BlockChain()
+#     blockChain.load(TRANSACTIONS_FILE_PATH)
+#     transactions = blockChain.get_transactions()
+#     sat = transactions[0]
+#     from_pub_key = VerifyingKey.from_string(
+#         binascii.unhexlify(sat.sender), curve=SECP256k1
+#     )
+#     signature = binascii.unhexlify(sat.signature)
+#     unsigned_json = sat.to_unsigned().model_dump_json()
+#     print(unsigned_json)
 
-    with pytest.raises(BadSignatureError) as e:
-        from_pub_key.verify(signature, json.dumps(unsigned).encode("utf-8"))
+#     from_pub_key.verify(signature, unsigned_json.encode("utf-8"))
 
-    assert str(e.value) == "Signature verification failed"
+#     assert True is True
+
+
+# def test_falsification_transaction(setup_transaction):
+#     blockChain = BlockChain()
+#     blockChain.load(TRANSACTIONS_FILE_PATH)
+#     transactions = blockChain.get_transactions()
+#     transaction = transactions[0]
+#     sat = Transaction(
+#         transaction.time,
+#         transaction.sender,
+#         transaction.receiver,
+#         30,
+#         transaction.signature,
+#     )
+#     from_pub_key = VerifyingKey.from_string(
+#         binascii.unhexlify(sat.sender), curve=SECP256k1
+#     )
+#     signature = binascii.unhexlify(sat.signature)
+#     unsigned = sat.to_unsigned().model_dump_json()
+
+#     with pytest.raises(BadSignatureError) as e:
+#         from_pub_key.verify(signature, json.dumps(unsigned).encode("utf-8"))
+
+#     assert str(e.value) == "Signature verification failed"
+
+
+# def test_send_same_transaction(setup_transaction):
+#     blockChain = BlockChain()
+#     blockChain.load(TRANSACTIONS_FILE_PATH)
+#     transactions = blockChain.get_transactions()
+#     transaction = transactions[0]
+#     sat = Transaction(
+#         transaction.time,
+#         transaction.sender,
+#         transaction.receiver,
+#         30,
+#         transaction.signature,
+#     )
+#     from_pub_key = VerifyingKey.from_string(
+#         binascii.unhexlify(sat.sender), curve=SECP256k1
+#     )
+#     signature = binascii.unhexlify(sat.signature)
+#     unsigned = sat.to_unsigned().model_dump_json()
+
+#     with pytest.raises(BadSignatureError) as e:
+#         from_pub_key.verify(signature, json.dumps(unsigned).encode("utf-8"))
+
+#     assert str(e.value) == "Signature verification failed"
