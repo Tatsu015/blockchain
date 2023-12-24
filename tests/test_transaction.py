@@ -66,28 +66,30 @@ def test_normal_transaction(setup_transaction):
     assert True is True
 
 
-# def test_falsification_transaction(setup_transaction):
-#     blockChain = BlockChain()
-#     blockChain.load(TRANSACTIONS_FILE_PATH)
-#     transactions = blockChain.get_transactions()
-#     transaction = transactions[0]
-#     sat = Transaction(
-#         transaction.time,
-#         transaction.sender,
-#         transaction.receiver,
-#         30,
-#         transaction.signature,
-#     )
-#     from_pub_key = VerifyingKey.from_string(
-#         binascii.unhexlify(sat.sender), curve=SECP256k1
-#     )
-#     signature = binascii.unhexlify(sat.signature)
-#     unsigned = sat.to_unsigned().model_dump_json()
+def test_falsification_transaction(setup_transaction):
+    # create falsificated transaction from correct transaction by change amount
+    # test to fail verify falsificated transaction
+    corr = new_transaction(time, FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
+    fals = Transaction(
+        corr.time,
+        corr.sender,
+        corr.receiver,
+        30,
+        corr.signature,
+    )
+    # get public key. both correct and falsificate public keys are same
+    from_pub_key = VerifyingKey.from_string(
+        binascii.unhexlify(fals.sender), curve=SECP256k1
+    )
 
-#     with pytest.raises(BadSignatureError) as e:
-#         from_pub_key.verify(signature, json.dumps(unsigned).encode("utf-8"))
+    fals_signature = binascii.unhexlify(fals.signature)
+    fals_unsigned = fals.to_unsigned().model_dump_json()
 
-#     assert str(e.value) == "Signature verification failed"
+    # falsicate signature and data(unsigned transaction) cannot verify by from_pub_key.
+    with pytest.raises(BadSignatureError) as e:
+        from_pub_key.verify(fals_signature, json.dumps(fals_unsigned).encode("utf-8"))
+
+    assert str(e.value) == "Signature verification failed"
 
 
 # def test_send_same_transaction(setup_transaction):
