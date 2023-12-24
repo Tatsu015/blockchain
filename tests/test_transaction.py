@@ -7,7 +7,6 @@ import os
 from datetime import datetime
 
 from blockchain.transaction import Transaction, new_transaction
-from blockchain.blockchain_repository import TransactionRepository
 from blockchain.blockchain import BlockChain
 
 
@@ -20,9 +19,9 @@ time = datetime(2023, 12, 23, 11, 23, 45, 67)
 @pytest.fixture
 def setup_transaction():
     t = new_transaction(time, FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
-    repo = TransactionRepository(path=TRANSACTIONS_FILE_PATH)
-    blockChain = BlockChain(repository=repo)
-    blockChain.add(t)
+    blockChain = BlockChain()
+    blockChain.append(t)
+    blockChain.save(TRANSACTIONS_FILE_PATH)
 
     yield
 
@@ -37,8 +36,8 @@ def test_transaction_json():
 
 
 def test_normal_transaction(setup_transaction):
-    repo = TransactionRepository(path=TRANSACTIONS_FILE_PATH)
-    blockChain = BlockChain(repository=repo)
+    blockChain = BlockChain()
+    blockChain.load(TRANSACTIONS_FILE_PATH)
     transactions = blockChain.get_transactions()
     sat = transactions[0]
     from_pub_key = VerifyingKey.from_string(
@@ -46,31 +45,32 @@ def test_normal_transaction(setup_transaction):
     )
     signature = binascii.unhexlify(sat.signature)
     unsigned_json = sat.to_unsigned().model_dump_json()
+    print(unsigned_json)
 
     from_pub_key.verify(signature, unsigned_json.encode("utf-8"))
 
     assert True is True
 
 
-# def test_falsification_transaction(setup_transaction):
-#     repo = TransactionRepository(path=TRANSACTIONS_FILE_PATH)
-#     blockChain = BlockChain(repo)
-#     transactions = blockChain.get_transactions()
-#     transaction = transactions[0]
-#     sat = Transaction(
-#         transaction.time,
-#         transaction.sender,
-#         transaction.receiver,
-#         30,
-#         transaction.signature,
-#     )
-#     from_pub_key = VerifyingKey.from_string(
-#         binascii.unhexlify(sat.sender), curve=SECP256k1
-#     )
-#     signature = binascii.unhexlify(sat.signature)
-#     unsigned = sat.to_unsigned().model_dump_json()
+def test_falsification_transaction(setup_transaction):
+    blockChain = BlockChain()
+    blockChain.load(TRANSACTIONS_FILE_PATH)
+    transactions = blockChain.get_transactions()
+    transaction = transactions[0]
+    sat = Transaction(
+        transaction.time,
+        transaction.sender,
+        transaction.receiver,
+        30,
+        transaction.signature,
+    )
+    from_pub_key = VerifyingKey.from_string(
+        binascii.unhexlify(sat.sender), curve=SECP256k1
+    )
+    signature = binascii.unhexlify(sat.signature)
+    unsigned = sat.to_unsigned().model_dump_json()
 
-#     with pytest.raises(BadSignatureError) as e:
-#         from_pub_key.verify(signature, json.dumps(unsigned).encode("utf-8"))
+    with pytest.raises(BadSignatureError) as e:
+        from_pub_key.verify(signature, json.dumps(unsigned).encode("utf-8"))
 
-#     assert str(e.value) == "Signature verification failed"
+    assert str(e.value) == "Signature verification failed"
