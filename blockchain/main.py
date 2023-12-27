@@ -1,13 +1,16 @@
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from blockchain.blockchain import BlockChain
 
 from blockchain.transaction import Transaction
 
 
 app = FastAPI()
 
-transaction_pool = {"transaction": []}
+
+block_chain = BlockChain()
+block_chain.load("transactions.json")
 
 
 @app.exception_handler(RequestValidationError)
@@ -23,7 +26,7 @@ def root():
 
 @app.get("/transaction_pool")
 def get_transaction_pool():
-    return transaction_pool
+    return block_chain.get_transactions()
 
 
 @app.post("/transaction_pool")
@@ -33,5 +36,5 @@ def post_transaction_pool(transaction: Transaction):
     except Exception as e:
         return {"message": e.value}
 
-    transaction_pool["transaction"].append(transaction)
+    block_chain.append(transaction)
     return {"message": "Transaction is posted"}
