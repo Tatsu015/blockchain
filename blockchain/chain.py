@@ -3,4 +3,4 @@ from blockchain.block import Block
 
 
 class Chain(BaseModel):
-    blocks: list[Block]
+    blocks: list[Block] = []

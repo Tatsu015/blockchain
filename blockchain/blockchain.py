@@ -1,5 +1,6 @@
 import json
 from pydantic import BaseModel
+from blockchain.chain import Chain
 from blockchain.transaction import Transaction
 
 
@@ -9,6 +10,7 @@ class TransactionReuseError(Exception):
 
 class BlockChain(BaseModel):
     transactions: list[Transaction] = []
+    chain: Chain
 
     def load(self, path):
         try:
@@ -34,3 +36,12 @@ class BlockChain(BaseModel):
 
     def get_transactions(self) -> list[Transaction]:
         return self.transactions
+
+    def get_chain(self) -> Chain:
+        return self.chain
+
+    def verify(self, chain: Chain):
+        pass
+
+    def replace(self, chain: Chain):
+        pass

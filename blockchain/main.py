@@ -2,14 +2,15 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from blockchain.blockchain import BlockChain
+from blockchain.chain import Chain
 
 from blockchain.transaction import Transaction
 
 
 app = FastAPI()
 
-
-block_chain = BlockChain()
+chain = Chain()
+block_chain = BlockChain(chain=chain)
 block_chain.load("transactions.json")
 
 
@@ -38,3 +39,20 @@ def post_transaction_pool(transaction: Transaction):
 
     block_chain.append(transaction)
     return {"message": "Transaction is posted"}
+
+
+@app.get("/chain")
+def get_chain():
+    return block_chain.get_chain()
+
+
+@app.post("/chain")
+def post_chain(chain: Chain):
+    if len(chain.blocks) <= len(block_chain.chain.blocks):
+        return {"message": "Received chain is ignored"}
+    try:
+        block_chain.verify(chain)
+        block_chain.replace(chain)
+
+    except Exception as e:
+        return {"message": e.value}
