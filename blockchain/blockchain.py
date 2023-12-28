@@ -21,7 +21,7 @@ class BlockChain(BaseModel):
             with open(path, "r") as file:
                 json_data = json.load(file)
                 transactions = Transactions.model_validate_json(json_data)
-                self.transactions = transactions
+                self.transactions = transactions.transactions
 
         except FileNotFoundError as e:
             print(e)
