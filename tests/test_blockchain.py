@@ -5,6 +5,7 @@ import binascii
 import json
 import os
 from datetime import datetime
+from blockchain.chain import Chain
 
 from blockchain.transaction import Transaction, new_transaction
 from blockchain.blockchain import BlockChain, TransactionReuseError
@@ -18,12 +19,14 @@ def test_restore_transactions():
     filepath = "test_signed_transaction.json"
     t1 = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
     t2 = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 10)
-    blockChain1 = BlockChain()
+    chain1 = Chain()
+    blockChain1 = BlockChain(chain=chain1)
     blockChain1.append(t1)
     blockChain1.append(t2)
     blockChain1.save(filepath)
 
-    blockChain2 = BlockChain()
+    chain2 = Chain()
+    blockChain2 = BlockChain(chain=chain2)
     blockChain2.load(filepath)
     transactions = blockChain2.get_transactions()
 
@@ -35,7 +38,8 @@ def test_restore_transactions():
 
 def test_add_same_transaction_not_accept():
     t = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
-    blockChain = BlockChain()
+    chain = Chain()
+    blockChain = BlockChain(chain=chain)
     blockChain.append(t)
 
     with pytest.raises(TransactionReuseError) as e:

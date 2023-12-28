@@ -8,6 +8,10 @@ class TransactionReuseError(Exception):
     pass
 
 
+class Transactions(BaseModel):
+    transactions: list[Transaction]
+
+
 class BlockChain(BaseModel):
     transactions: list[Transaction] = []
     chain: Chain
@@ -16,16 +20,16 @@ class BlockChain(BaseModel):
         try:
             with open(path, "r") as file:
                 json_data = json.load(file)
-                self.transactions = BlockChain.model_validate_json(
-                    json_data
-                ).transactions
+                transactions = Transactions.model_validate_json(json_data)
+                self.transactions = transactions
 
         except FileNotFoundError as e:
             print(e)
 
     def save(self, path):
         with open(path, "w") as file:
-            json_data = self.model_dump_json()
+            transactions = Transactions(transactions=self.transactions)
+            json_data = transactions.model_dump_json()
             json.dump(json_data, file, default=str)
 
     def append(self, transaction: Transaction):
