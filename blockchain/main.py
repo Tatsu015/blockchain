@@ -27,7 +27,7 @@ def root():
 
 @app.get("/transaction_pool")
 def get_transaction_pool():
-    return block_chain.get_transactions()
+    return block_chain.transactions
 
 
 @app.post("/transaction_pool")
@@ -38,12 +38,13 @@ def post_transaction_pool(transaction: Transaction):
         return {"message": e.value}
 
     block_chain.append(transaction)
+    block_chain.save_transactions("transactions.json")
     return {"message": "Transaction is posted"}
 
 
 @app.get("/chain")
 def get_chain():
-    return block_chain.get_chain()
+    return block_chain.chain
 
 
 @app.post("/chain")
@@ -53,7 +54,7 @@ def post_chain(chain: Chain):
     try:
         block_chain.verify(chain)
         block_chain.replace(chain)
-        block_chain.save + transactions()
+        block_chain.save_chain("chain.json")
 
     except Exception as e:
         return {"message": e.value}

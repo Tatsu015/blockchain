@@ -1,35 +1,42 @@
 import json
 from pydantic import BaseModel
-from blockchain.chain import Chain
+from blockchain.block import Block
 from blockchain.transaction import Transaction
+from typing import NewType
+
+Chain = NewType("Chain", list[Block])
 
 
 class TransactionReuseError(Exception):
     pass
 
 
-class Transactions(BaseModel):
+class TransactionsMapper(BaseModel):
     transactions: list[Transaction]
+
+
+class ChainMapper(BaseModel):
+    chain: Chain
 
 
 class BlockChain(BaseModel):
     transactions: list[Transaction] = []
-    chain: Chain
+    chain: Chain = []
 
     def load_transactios(self, path):
         try:
             with open(path, "r") as file:
                 json_data = json.load(file)
-                transactions = Transactions.model_validate_json(json_data)
-                self.transactions = transactions.transactions
+                transactions_mapper = TransactionsMapper.model_validate_json(json_data)
+                self.transactions = transactions_mapper.transactions
 
         except FileNotFoundError as e:
             print(e)
 
     def save_transactions(self, path):
         with open(path, "w") as file:
-            transactions = Transactions(transactions=self.transactions)
-            json_data = transactions.model_dump_json()
+            transactions_mapper = TransactionsMapper(transactions=self.transactions)
+            json_data = transactions_mapper.model_dump_json()
             json.dump(json_data, file, default=str)
 
     def append(self, transaction: Transaction):
@@ -38,11 +45,21 @@ class BlockChain(BaseModel):
 
         self.transactions.append(transaction)
 
-    def get_transactions(self) -> list[Transaction]:
-        return self.transactions
+    def load_chain(self, path):
+        try:
+            with open(path, "r") as file:
+                json_data = json.load(file)
+                chain_mapper = ChainMapper.model_validate_json(json_data)
+                self.chain = chain_mapper.chain
 
-    def get_chain(self) -> Chain:
-        return self.chain
+        except FileNotFoundError as e:
+            print(e)
+
+    def save_chain(self, path):
+        with open(path, "w") as file:
+            chain_mapper = ChainMapper(chain=self.chain)
+            json_data = chain_mapper.model_dump_json()
+            json.dump(json_data, file, default=str)
 
     def verify(self, chain: Chain):
         pass
