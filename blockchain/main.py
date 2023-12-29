@@ -11,7 +11,7 @@ app = FastAPI()
 
 chain = Chain()
 block_chain = BlockChain(chain=chain)
-block_chain.load("transactions.json")
+block_chain.load_transactios("transactions.json")
 
 
 @app.exception_handler(RequestValidationError)
@@ -53,6 +53,7 @@ def post_chain(chain: Chain):
     try:
         block_chain.verify(chain)
         block_chain.replace(chain)
+        block_chain.save + transactions()
 
     except Exception as e:
         return {"message": e.value}

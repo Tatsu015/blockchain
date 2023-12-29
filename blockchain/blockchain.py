@@ -16,7 +16,7 @@ class BlockChain(BaseModel):
     transactions: list[Transaction] = []
     chain: Chain
 
-    def load(self, path):
+    def load_transactios(self, path):
         try:
             with open(path, "r") as file:
                 json_data = json.load(file)
@@ -26,7 +26,7 @@ class BlockChain(BaseModel):
         except FileNotFoundError as e:
             print(e)
 
-    def save(self, path):
+    def save_transactions(self, path):
         with open(path, "w") as file:
             transactions = Transactions(transactions=self.transactions)
             json_data = transactions.model_dump_json()

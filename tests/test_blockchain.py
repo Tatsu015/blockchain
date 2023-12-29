@@ -23,11 +23,11 @@ def test_restore_transactions():
     blockChain1 = BlockChain(chain=chain1)
     blockChain1.append(t1)
     blockChain1.append(t2)
-    blockChain1.save(filepath)
+    blockChain1.save_transactions(filepath)
 
     chain2 = Chain()
     blockChain2 = BlockChain(chain=chain2)
-    blockChain2.load(filepath)
+    blockChain2.load_transactios(filepath)
     transactions = blockChain2.get_transactions()
 
     assert t1 == transactions[0]
