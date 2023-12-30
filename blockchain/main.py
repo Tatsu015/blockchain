@@ -1,17 +1,16 @@
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from blockchain.blockchain import BlockChain
-from blockchain.chain import Chain
+from blockchain.blockchain import BlockChain, Chain
 
 from blockchain.transaction import Transaction
 
 
 app = FastAPI()
 
-chain = Chain()
-block_chain = BlockChain(chain=chain)
+block_chain = BlockChain()
 block_chain.load_transactios("transactions.json")
+block_chain.load_chain("chain.json")
 
 
 @app.exception_handler(RequestValidationError)
