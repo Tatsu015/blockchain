@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 from pydantic import BaseModel
 from blockchain.block import Block
@@ -22,6 +23,10 @@ class ChainMapper(BaseModel):
 class BlockChain(BaseModel):
     transactions: list[Transaction] = []
     chain: Chain = []
+    first_block: Block = Block(
+        time=datetime.min, transactions=[], hash="SimplestBlockChain", nonce=0
+    )
+    all_block_transactions: list[Transaction] = []
 
     def load_transactios(self, path):
         try:
