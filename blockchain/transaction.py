@@ -1,7 +1,6 @@
 from datetime import datetime
 from ecdsa import SigningKey, SECP256k1, VerifyingKey, BadSignatureError
 import binascii
-from dataclasses import dataclass
 from pydantic import BaseModel
 
 
@@ -9,7 +8,6 @@ class NonPositiveAmountTransactionError(Exception):
     pass
 
 
-@dataclass(frozen=True)
 class UnsignedTransaction(BaseModel):
     time: datetime
     sender: str
@@ -17,7 +15,6 @@ class UnsignedTransaction(BaseModel):
     amount: int
 
 
-@dataclass(frozen=True)
 class Transaction(BaseModel):
     time: datetime
     sender: str
