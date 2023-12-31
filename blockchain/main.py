@@ -54,6 +54,7 @@ def post_chain(chain: Chain):
         block_chain.verify(chain)
         block_chain.replace(chain)
         block_chain.save_chain("chain.json")
+        block_chain.save_transactions("transaction.json")
 
     except Exception as e:
         return {"message": e.value}
