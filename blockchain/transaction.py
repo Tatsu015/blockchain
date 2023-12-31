@@ -1,5 +1,5 @@
 from datetime import datetime
-from ecdsa import SigningKey, SECP256k1, VerifyingKey, BadSignatureError
+from ecdsa import SigningKey, SECP256k1, VerifyingKey
 import binascii
 from pydantic import BaseModel
 
