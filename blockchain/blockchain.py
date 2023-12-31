@@ -22,10 +22,10 @@ class ChainMapper(BaseModel):
 
 class BlockChain(BaseModel):
     transactions: list[Transaction] = []
-    chain: Chain = []
     first_block: Block = Block(
         time=datetime.min, transactions=[], hash="SimplestBlockChain", nonce=0
     )
+    chain: Chain = [first_block]
     all_block_transactions: list[Transaction] = []
 
     def load_transactios(self, path):
@@ -45,7 +45,9 @@ class BlockChain(BaseModel):
             json.dump(json_data, file, default=str)
 
     def append(self, transaction: Transaction):
-        if transaction in self.transactions:
+        if (transaction in self.transactions) and (
+            transaction in self.all_block_transactions
+        ):
             raise TransactionReuseError("transaction already appended")
 
         self.transactions.append(transaction)
