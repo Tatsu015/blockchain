@@ -8,7 +8,14 @@ from typing import NewType
 Chain = NewType("Chain", list[Block])
 
 
+POW_DIFFICULTY = 10
+
+
 class TransactionReuseError(Exception):
+    pass
+
+
+class TransactionVerifyError(Exception):
     pass
 
 
@@ -68,8 +75,26 @@ class BlockChain(BaseModel):
             json_data = chain_mapper.model_dump_json()
             json.dump(json_data, file, default=str)
 
+    def reset_all_block_transactions(self):
+        self.all_block_transactions = [b.transactions for b in self.chain]
+
     def verify(self, chain: Chain):
-        pass
+        all = []
+        for i, now_block in enumerate(chain):
+            if i == 0:
+                if now_block != self.first_block:
+                    raise TransactionVerifyError("first block maybe falsificated")
+            if now_block.hash != prev_block.hash():
+                raise TransactionVerifyError("chain hash maybe falsificated")
+            untime_now_block = now_block.to_untimed()
+            if (format(int(untime_now_block.hash(), 16), "0256b"))[
+                -POW_DIFFICULTY:
+            ] != "0" * POW_DIFFICULTY:
+                raise TransactionVerifyError(
+                    "chain not satisfy mining success condition"
+                )
+
+            prev_block = chain[i - 1]
 
     def replace(self, chain: Chain):
         pass
