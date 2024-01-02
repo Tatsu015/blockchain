@@ -2,7 +2,7 @@ from datetime import datetime
 import json
 from pydantic import BaseModel
 from blockchain.block import Block
-from blockchain.transaction import Transaction
+from blockchain.transaction import Transaction, new_transaction
 from typing import NewType
 
 Chain = NewType("Chain", list[Block])
@@ -117,4 +117,35 @@ class BlockChain(BaseModel):
                         raise TransactionVerifyError("duplicate transaction")
 
     def replace(self, chain: Chain):
-        pass
+        self.chain = chain
+        self.reset_all_block_transactions()
+        for transaction in self.all_block_transactions:
+            if transaction in self.transactions:
+                self.transactions.remove(transaction)
+
+    def new_block(self, now: datetime, miner: str) -> Block:
+        reward_transaction = new_transaction(
+            time=now,
+            from_secret_key="BlockChain",
+            to_public_key=miner,
+            amount=REWARD_AMOUNT,
+        )
+        transactions = self.transactions.copy()
+        transactions.append(reward_transaction)
+        last_block = self.chain[-1]
+        untime_block = last_block.to_untimed()
+        new_nonce = 0
+
+        while (
+            not format(int(untime_block.hash(), 16), "0256b")[-POW_DIFFICULTY]
+            == "0" * POW_DIFFICULTY
+        ):
+            new_nonce += 1
+            block = Block(
+                time=now,
+                transactions=untime_block.transactions,
+                hash=untime_block.hash,
+                nonce=new_nonce,
+            )
+
+        self.chain.append(block)
