@@ -9,6 +9,7 @@ Chain = NewType("Chain", list[Block])
 
 
 POW_DIFFICULTY = 10
+REWARD_AMOUNT = 256
 
 
 class TransactionReuseError(Exception):
@@ -79,13 +80,16 @@ class BlockChain(BaseModel):
         self.all_block_transactions = [b.transactions for b in self.chain]
 
     def verify(self, chain: Chain):
-        all = []
+        all_transactions = []
         for i, now_block in enumerate(chain):
             if i == 0:
                 if now_block != self.first_block:
                     raise TransactionVerifyError("first block maybe falsificated")
+
+            prev_block = chain[i - 1]
             if now_block.hash != prev_block.hash():
                 raise TransactionVerifyError("chain hash maybe falsificated")
+
             untime_now_block = now_block.to_untimed()
             if (format(int(untime_now_block.hash(), 16), "0256b"))[
                 -POW_DIFFICULTY:
@@ -94,7 +98,23 @@ class BlockChain(BaseModel):
                     "chain not satisfy mining success condition"
                 )
 
-            prev_block = chain[i - 1]
+            is_reward = False
+            for transaction in now_block.transactions:
+                if transaction.sender == "BlockChain":
+                    if is_reward == True:
+                        raise TransactionVerifyError("chain already contain reward")
+                    else:
+                        is_reward = True
+
+                    if transaction.amount != REWARD_AMOUNT:
+                        raise TransactionVerifyError("reward amount not correct")
+                else:
+                    transaction.verify()
+
+                    if transaction not in all_transactions:
+                        all_transactions.append(transaction)
+                    else:
+                        raise TransactionVerifyError("duplicate transaction")
 
     def replace(self, chain: Chain):
         pass
