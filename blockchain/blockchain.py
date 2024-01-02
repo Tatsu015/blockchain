@@ -148,4 +148,4 @@ class BlockChain(BaseModel):
                 nonce=new_nonce,
             )
 
-        self.chain.append(block)
+        return block
