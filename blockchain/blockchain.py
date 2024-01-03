@@ -10,6 +10,7 @@ Chain = NewType("Chain", list[Block])
 
 POW_DIFFICULTY = 10
 REWARD_AMOUNT = 256
+MINING_SENDER_KEY = "BlockChainBlockChainBlockChain!!".encode("utf-8").hex()
 
 
 class TransactionReuseError(Exception):
@@ -100,7 +101,7 @@ class BlockChain(BaseModel):
 
             is_reward = False
             for transaction in now_block.transactions:
-                if transaction.sender == "BlockChain":
+                if transaction.sender == MINING_SENDER_KEY:
                     if is_reward == True:
                         raise TransactionVerifyError("chain already contain reward")
                     else:
@@ -126,7 +127,7 @@ class BlockChain(BaseModel):
     def new_block(self, now: datetime, miner: str) -> Block:
         reward_transaction = new_transaction(
             time=now,
-            from_secret_key="BlockChain",
+            from_secret_key=MINING_SENDER_KEY,
             to_public_key=miner,
             amount=REWARD_AMOUNT,
         )
