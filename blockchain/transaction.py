@@ -23,7 +23,12 @@ class Transaction(BaseModel):
     signature: str
 
     def to_unsigned(self) -> UnsignedTransaction:
-        return UnsignedTransaction(self.time, self.sender, self.receiver, self.amount)
+        return UnsignedTransaction(
+            time=self.time,
+            sender=self.sender,
+            receiver=self.receiver,
+            amount=self.amount,
+        )
 
     def verify(self):
         if self.amount <= 0:
@@ -47,10 +52,16 @@ def new_transaction(
         binascii.unhexlify(from_secret_key), curve=SECP256k1
     )
     from_pub_key = from_sec_key.verifying_key.to_string().hex()
-    unsigned = UnsignedTransaction(time, from_pub_key, to_public_key, amount)
+    unsigned = UnsignedTransaction(
+        time=time, sender=from_pub_key, receiver=to_public_key, amount=amount
+    )
 
     s = from_sec_key.sign(unsigned.model_dump_json().encode("utf-8")).hex()
     t = Transaction(
-        unsigned.time, unsigned.sender, unsigned.receiver, unsigned.amount, s
+        time=unsigned.time,
+        sender=unsigned.sender,
+        receiver=unsigned.receiver,
+        amount=unsigned.amount,
+        signature=s,
     )
     return t
