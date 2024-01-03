@@ -13,3 +13,7 @@ dev_post:
 PHONY:dev_get
 dev_get:
 	curl http://127.0.0.1:8080/transaction_pool | jq
+
+PHONY:mining
+mining:
+	poetry run python mining.py
