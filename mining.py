@@ -23,7 +23,7 @@ if res_trans.status_code != 200:
 trans_json = res_trans.json()
 blockchain.transactions = trans_json  # maybe NG
 
-block = blockchain.new_block(time=datetime.now(), miner=miner)
+block = blockchain.new_block(now=datetime.now(), miner=miner)
 blockchain.chain.append(block)
 
 res = requests.post(
