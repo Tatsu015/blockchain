@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from blockchain.blockchain import BlockChain, Chain
+from blockchain.blockchain import BlockChain, Block
 
 from blockchain.transaction import Transaction
 
@@ -47,7 +47,7 @@ def get_chain():
 
 
 @app.post("/chain")
-def post_chain(chain: Chain):
+def post_chain(chain: list[Block]):
     if len(chain.blocks) <= len(block_chain.chain.blocks):
         return {"message": "Received chain is ignored"}
     try:

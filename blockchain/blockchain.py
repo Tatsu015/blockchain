@@ -5,8 +5,6 @@ from blockchain.block import Block
 from blockchain.transaction import Transaction, new_transaction
 from typing import NewType
 
-Chain = NewType("Chain", list[Block])
-
 
 POW_DIFFICULTY = 10
 REWARD_AMOUNT = 256
@@ -26,7 +24,7 @@ class TransactionsMapper(BaseModel):
 
 
 class ChainMapper(BaseModel):
-    chain: Chain
+    chain: list[Block]
 
 
 class BlockChain(BaseModel):
@@ -34,13 +32,17 @@ class BlockChain(BaseModel):
     first_block: Block = Block(
         time=datetime.min, transactions=[], hash="SimplestBlockChain", nonce=0
     )
-    chain: Chain = [first_block]
+    chain: list[Block] = [first_block]
     all_block_transactions: list[Transaction] = []
 
     def load_transactios(self, path):
         try:
             with open(path, "r") as file:
                 json_data = json.load(file)
+                print("++++++++++++")
+                print(json_data)
+                print(type(json_data))
+
                 transactions_mapper = TransactionsMapper.model_validate_json(json_data)
                 self.transactions = transactions_mapper.transactions
 
@@ -80,7 +82,7 @@ class BlockChain(BaseModel):
     def reset_all_block_transactions(self):
         self.all_block_transactions = [b.transactions for b in self.chain]
 
-    def verify(self, chain: Chain):
+    def verify(self, chain: list[Block]):
         all_transactions = []
         for i, now_block in enumerate(chain):
             if i == 0:
@@ -117,7 +119,7 @@ class BlockChain(BaseModel):
                     else:
                         raise TransactionVerifyError("duplicate transaction")
 
-    def replace(self, chain: Chain):
+    def replace(self, chain: list[Block]):
         self.chain = chain
         self.reset_all_block_transactions()
         for transaction in self.all_block_transactions:
