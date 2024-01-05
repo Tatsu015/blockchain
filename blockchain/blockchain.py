@@ -39,10 +39,6 @@ class BlockChain(BaseModel):
         try:
             with open(path, "r") as file:
                 json_data = json.load(file)
-                print("++++++++++++")
-                print(json_data)
-                print(type(json_data))
-
                 transactions_mapper = TransactionsMapper.model_validate_json(json_data)
                 self.transactions = transactions_mapper.transactions
 
