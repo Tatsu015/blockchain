@@ -1,7 +1,7 @@
 from datetime import datetime
 import json
 from pydantic import BaseModel
-from blockchain.block import Block
+from blockchain.block import Block, UntimedBlock
 from blockchain.transaction import Transaction, new_transaction
 from typing import NewType
 
@@ -90,11 +90,11 @@ class BlockChain(BaseModel):
                     raise TransactionVerifyError("first block maybe falsificated")
 
             prev_block = chain[i - 1]
-            if now_block.hash != prev_block.hash():
+            if now_block.hash != prev_block.hashed():
                 raise TransactionVerifyError("chain hash maybe falsificated")
 
             untime_now_block = now_block.to_untimed()
-            if (format(int(untime_now_block.hash(), 16), "0256b"))[
+            if (format(int(untime_now_block.hashed(), 16), "0256b"))[
                 -POW_DIFFICULTY:
             ] != "0" * POW_DIFFICULTY:
                 raise TransactionVerifyError(
@@ -136,19 +136,21 @@ class BlockChain(BaseModel):
         transactions = self.transactions.copy()
         transactions.append(reward_transaction)
         last_block = self.chain[-1]
-        untime_block = last_block.to_untimed()
-        new_nonce = 0
+        untimed_block = last_block.to_untimed()
 
-        while (
-            not format(int(untime_block.hash(), 16), "0256b")[-POW_DIFFICULTY]
-            == "0" * POW_DIFFICULTY
-        ):
-            new_nonce += 1
-            block = Block(
-                time=now,
-                transactions=untime_block.transactions,
-                hash=untime_block.hash,
-                nonce=new_nonce,
-            )
+        while not self.is_correct_hash(untimed_block=untimed_block):
+            untimed_block.count_up_nonce()
+
+        block = Block(
+            time=now,
+            transactions=untimed_block.transactions,
+            hash=untimed_block.hash,
+            nonce=untimed_block.nonce,
+        )
 
         return block
+
+    def is_correct_hash(self, untimed_block: UntimedBlock) -> bool:
+        hex_hash = format(int(untimed_block.hashed(), 16), "0256b")
+        hash_end = hex_hash[-POW_DIFFICULTY:]
+        return hash_end == "0" * POW_DIFFICULTY

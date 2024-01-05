@@ -9,9 +9,13 @@ class UntimedBlock(BaseModel):
     hash: str
     nonce: int
 
-    def hash(self) -> str:
-        h = hashlib.sha256(self.model_dump_json().encode("utf-8")).hexdigest()
+    def hashed(self) -> str:
+        encoded = self.model_dump_json().encode("utf-8")
+        h = hashlib.sha256(encoded).hexdigest()
         return h
+
+    def count_up_nonce(self):
+        self.nonce += 1
 
 
 class Block(BaseModel):
@@ -20,7 +24,7 @@ class Block(BaseModel):
     hash: str
     nonce: int
 
-    def hash(self) -> str:
+    def hashed(self) -> str:
         h = hashlib.sha256(self.model_dump_json().encode("utf-8")).hexdigest()
         return h
 
