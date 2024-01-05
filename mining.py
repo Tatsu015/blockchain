@@ -3,6 +3,7 @@ import sys
 import json
 from datetime import datetime
 from pydantic import TypeAdapter
+from pydantic.json import pydantic_encoder
 from blockchain.block import Block
 
 from blockchain.blockchain import BlockChain
@@ -31,8 +32,7 @@ blockchain.transactions = TypeAdapter(list[Transaction]).validate_python(trans_j
 block = blockchain.new_block(now=datetime.now(), miner=miner)
 blockchain.chain.append(block)
 
-res = requests.post(
-    "http://" + ip_addr + ":8080/chain", blockchain.chain.model_dump_json()
-)
+data = json.dumps(blockchain.chain, default=pydantic_encoder)
+res = requests.post("http://" + ip_addr + ":8080/chain", data=data)
 
 print(res.text)
