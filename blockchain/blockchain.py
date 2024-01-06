@@ -1,9 +1,10 @@
 from datetime import datetime
 import json
-from pydantic import BaseModel
+from pydantic import BaseModel, TypeAdapter
+from pydantic.json import pydantic_encoder
+
 from blockchain.block import Block, UntimedBlock
 from blockchain.transaction import Transaction, new_transaction
-from typing import NewType
 
 
 POW_DIFFICULTY = 10
@@ -19,14 +20,6 @@ class TransactionVerifyError(Exception):
     pass
 
 
-class TransactionsMapper(BaseModel):
-    transactions: list[Transaction]
-
-
-class ChainMapper(BaseModel):
-    chain: list[Block]
-
-
 class BlockChain(BaseModel):
     transactions: list[Transaction] = []
     first_block: Block = Block(
@@ -37,18 +30,18 @@ class BlockChain(BaseModel):
 
     def load_transactios(self, path):
         try:
-            with open(path, "r") as file:
+            with open(path, "r", encoding="utf-8") as file:
                 json_data = json.load(file)
-                transactions_mapper = TransactionsMapper.model_validate_json(json_data)
-                self.transactions = transactions_mapper.transactions
+                self.transactions = TypeAdapter(list[Transaction]).validate_json(
+                    json_data
+                )
 
         except FileNotFoundError as e:
             print(e)
 
     def save_transactions(self, path):
-        with open(path, "w") as file:
-            transactions_mapper = TransactionsMapper(transactions=self.transactions)
-            json_data = transactions_mapper.model_dump_json()
+        with open(path, "w", encoding="utf-8") as file:
+            json_data = json.dumps(self.transactions, default=pydantic_encoder)
             json.dump(json_data, file, default=str)
 
     def append(self, transaction: Transaction):
@@ -61,18 +54,16 @@ class BlockChain(BaseModel):
 
     def load_chain(self, path):
         try:
-            with open(path, "r") as file:
+            with open(path, "r", encoding="utf-8") as file:
                 json_data = json.load(file)
-                chain_mapper = ChainMapper.model_validate_json(json_data)
-                self.chain = chain_mapper.chain
+                self.chain = TypeAdapter(list[Block]).dump_python(json_data)
 
         except FileNotFoundError as e:
             print(e)
 
     def save_chain(self, path):
-        with open(path, "w") as file:
-            chain_mapper = ChainMapper(chain=self.chain)
-            json_data = chain_mapper.model_dump_json()
+        with open(path, "w", encoding="utf-8") as file:
+            json_data = json.dumps(self.chain, default=pydantic_encoder)
             json.dump(json_data, file, default=str)
 
     def reset_all_block_transactions(self):
