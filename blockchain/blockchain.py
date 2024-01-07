@@ -75,36 +75,36 @@ class BlockChain(BaseModel):
             if i == 0:
                 if now_block != self.first_block:
                     raise TransactionVerifyError("first block maybe falsificated")
+            else:
+                prev_block = chain[i - 1]
+                if now_block.hash_value != prev_block.hash():
+                    raise TransactionVerifyError("chain hash maybe falsificated")
 
-            prev_block = chain[i - 1]
-            if now_block.hash_value != prev_block.hash():
-                raise TransactionVerifyError("chain hash maybe falsificated")
+                untime_now_block = now_block.to_untimed()
+                if (format(int(untime_now_block.hash(), 16), "0256b"))[
+                    -POW_DIFFICULTY:
+                ] != "0" * POW_DIFFICULTY:
+                    raise TransactionVerifyError(
+                        "chain not satisfy mining success condition"
+                    )
 
-            untime_now_block = now_block.to_untimed()
-            if (format(int(untime_now_block.hash(), 16), "0256b"))[
-                -POW_DIFFICULTY:
-            ] != "0" * POW_DIFFICULTY:
-                raise TransactionVerifyError(
-                    "chain not satisfy mining success condition"
-                )
+                is_reward = False
+                for transaction in now_block.transactions:
+                    if transaction.sender == MINING_SENDER_KEY:
+                        if is_reward == True:
+                            raise TransactionVerifyError("chain already contain reward")
+                        else:
+                            is_reward = True
 
-            is_reward = False
-            for transaction in now_block.transactions:
-                if transaction.sender == MINING_SENDER_KEY:
-                    if is_reward == True:
-                        raise TransactionVerifyError("chain already contain reward")
+                        if transaction.amount != REWARD_AMOUNT:
+                            raise TransactionVerifyError("reward amount not correct")
                     else:
-                        is_reward = True
+                        transaction.verify()
 
-                    if transaction.amount != REWARD_AMOUNT:
-                        raise TransactionVerifyError("reward amount not correct")
-                else:
-                    transaction.verify()
-
-                    if transaction not in all_transactions:
-                        all_transactions.append(transaction)
-                    else:
-                        raise TransactionVerifyError("duplicate transaction")
+                        if transaction not in all_transactions:
+                            all_transactions.append(transaction)
+                        else:
+                            raise TransactionVerifyError("duplicate transaction")
 
     def replace(self, chain: list[Block]):
         self.chain = chain
@@ -123,16 +123,17 @@ class BlockChain(BaseModel):
         transactions = self.transactions.copy()
         transactions.append(reward_transaction)
         last_block = self.chain[-1]
-        untimed_block = last_block.to_untimed()
+        last_block_hash = last_block.hash()
+        untimed_last_block = last_block.to_untimed()
 
-        while not self.is_correct_hash(untimed_block=untimed_block):
-            untimed_block.count_up_nonce()
+        while not self.is_correct_hash(untimed_block=untimed_last_block):
+            untimed_last_block.count_up_nonce()
 
         block = Block(
             time=datetime.now().isoformat(),
-            transactions=untimed_block.transactions,
-            hash_value=untimed_block.hash_value,
-            nonce=untimed_block.nonce,
+            transactions=untimed_last_block.transactions,
+            hash_value=last_block_hash,
+            nonce=untimed_last_block.nonce,
         )
 
         return block
