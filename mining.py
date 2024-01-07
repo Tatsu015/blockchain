@@ -27,7 +27,7 @@ if res_trans.status_code != 200:
 trans_json = res_trans.json()
 blockchain.transactions = TypeAdapter(list[Transaction]).validate_python(trans_json)
 
-block = blockchain.new_block(now=datetime.now(), miner=miner)
+block = blockchain.find_new_block(now=datetime.now(), miner=miner)
 blockchain.chain.append(block)
 
 data = json.dumps(blockchain.chain, default=pydantic_encoder)

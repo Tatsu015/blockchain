@@ -113,7 +113,7 @@ class BlockChain(BaseModel):
             if transaction in self.transactions:
                 self.transactions.remove(transaction)
 
-    def new_block(self, now: datetime, miner: str) -> Block:
+    def find_new_block(self, now: datetime, miner: str) -> Block:
         reward_transaction = new_transaction(
             time=now,
             from_secret_key=MINING_SENDER_KEY,
