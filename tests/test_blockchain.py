@@ -15,7 +15,7 @@ TO_PUBLIC_KEY = "b2ec566cff3702724e86ef6fa0d36835d6d5153ff402bca6dc976b7dc308f4b
 
 
 def test_restore_transactions():
-    filepath = "test_signed_transaction.json"
+    filepath = "test_signed_transactions.json"
     t1 = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
     t2 = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 10)
     blockChain1 = BlockChain()
