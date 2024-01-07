@@ -45,12 +45,12 @@ class BlockChain(BaseModel):
             json.dump(json_data, file, default=str)
 
     def append(self, transaction: Transaction):
-        if (transaction in self.transactions) and (
-            transaction in self.all_block_transactions
+        if (transaction not in self.transactions) and (
+            transaction not in self.all_block_transactions
         ):
+            self.transactions.append(transaction)
+        else:
             raise TransactionReuseError("transaction already appended")
-
-        self.transactions.append(transaction)
 
     def load_chain(self, path):
         try:

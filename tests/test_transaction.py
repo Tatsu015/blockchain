@@ -42,11 +42,11 @@ def test_falsification_transaction():
     # test to fail verify falsificated transaction
     corr = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
     fals = Transaction(
-        corr.time,
-        corr.sender,
-        corr.receiver,
-        30,
-        corr.signature,
+        time=corr.time,
+        sender=corr.sender,
+        receiver=corr.receiver,
+        amount=30,
+        signature=corr.signature,
     )
     # get public key. both correct and falsificate public keys are same
     from_pub_key = VerifyingKey.from_string(
