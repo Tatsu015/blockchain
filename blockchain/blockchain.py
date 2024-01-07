@@ -81,9 +81,7 @@ class BlockChain(BaseModel):
                     raise TransactionVerifyError("chain hash maybe falsificated")
 
                 untime_now_block = now_block.to_untimed()
-                if (format(int(untime_now_block.hash(), 16), "0256b"))[
-                    -POW_DIFFICULTY:
-                ] != "0" * POW_DIFFICULTY:
+                if self.is_correct_hash(untime_now_block):
                     raise TransactionVerifyError(
                         "chain not satisfy mining success condition"
                     )
