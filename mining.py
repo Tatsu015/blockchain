@@ -31,6 +31,8 @@ block = blockchain.find_new_block(now=datetime.now(), miner=miner)
 blockchain.chain.append(block)
 
 data = json.dumps(blockchain.chain, default=pydantic_encoder)
+print("success mining!")
+print("chain:", data)
 res = requests.post("http://" + ip_addr + ":8080/chain", data=data)
 
 print(res.text)

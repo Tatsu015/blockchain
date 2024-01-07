@@ -129,7 +129,7 @@ class BlockChain(BaseModel):
             untimed_block.count_up_nonce()
 
         block = Block(
-            time=now,
+            time=datetime.now().isoformat(),
             transactions=untimed_block.transactions,
             hash_value=untimed_block.hash_value,
             nonce=untimed_block.nonce,

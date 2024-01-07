@@ -58,4 +58,4 @@ def post_chain(chain: list[Block]):
 
     except Exception as e:
         print(e)
-        return {"message": e}
+        return {"message": str(e)}
