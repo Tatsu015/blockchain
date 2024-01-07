@@ -23,7 +23,7 @@ class TransactionVerifyError(Exception):
 class BlockChain(BaseModel):
     transactions: list[Transaction] = []
     first_block: Block = Block(
-        time=datetime.min, transactions=[], hash="SimplestBlockChain", nonce=0
+        time=datetime.min, transactions=[], hash_value="SimplestBlockChain", nonce=0
     )
     chain: list[Block] = [first_block]
     all_block_transactions: list[Transaction] = []
@@ -77,11 +77,11 @@ class BlockChain(BaseModel):
                     raise TransactionVerifyError("first block maybe falsificated")
 
             prev_block = chain[i - 1]
-            if now_block.hash != prev_block.hashed():
+            if now_block.hash_value != prev_block.hash():
                 raise TransactionVerifyError("chain hash maybe falsificated")
 
             untime_now_block = now_block.to_untimed()
-            if (format(int(untime_now_block.hashed(), 16), "0256b"))[
+            if (format(int(untime_now_block.hash(), 16), "0256b"))[
                 -POW_DIFFICULTY:
             ] != "0" * POW_DIFFICULTY:
                 raise TransactionVerifyError(
@@ -131,13 +131,13 @@ class BlockChain(BaseModel):
         block = Block(
             time=now,
             transactions=untimed_block.transactions,
-            hash=untimed_block.hash,
+            hash_value=untimed_block.hash_value,
             nonce=untimed_block.nonce,
         )
 
         return block
 
     def is_correct_hash(self, untimed_block: UntimedBlock) -> bool:
-        hex_hash = format(int(untimed_block.hashed(), 16), "0256b")
+        hex_hash = format(int(untimed_block.hash(), 16), "0256b")
         hash_end = hex_hash[-POW_DIFFICULTY:]
         return hash_end == "0" * POW_DIFFICULTY

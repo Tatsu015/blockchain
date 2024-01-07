@@ -6,10 +6,10 @@ from blockchain.transaction import Transaction
 
 class UntimedBlock(BaseModel):
     transactions: list[Transaction]
-    hash: str
+    hash_value: str
     nonce: int
 
-    def hashed(self) -> str:
+    def hash(self) -> str:
         encoded = self.model_dump_json().encode("utf-8")
         h = hashlib.sha256(encoded).hexdigest()
         return h
@@ -21,14 +21,14 @@ class UntimedBlock(BaseModel):
 class Block(BaseModel):
     time: datetime
     transactions: list[Transaction]
-    hash: str
+    hash_value: str
     nonce: int
 
-    def hashed(self) -> str:
+    def hash(self) -> str:
         h = hashlib.sha256(self.model_dump_json().encode("utf-8")).hexdigest()
         return h
 
     def to_untimed(self) -> UntimedBlock:
         return UntimedBlock(
-            transactions=self.transactions, hash=self.hash, nonce=self.nonce
+            transactions=self.transactions, hash_value=self.hash_value, nonce=self.nonce
         )
