@@ -122,7 +122,9 @@ class BlockChain(BaseModel):
         transactions.append(reward_transaction)
         last_block = self.chain[-1]
         last_block_hash = last_block.hash()
-        untimed_last_block = last_block.to_untimed()
+        untimed_last_block = UntimedBlock(
+            transactions=transactions, hash_value=last_block_hash, nonce=0
+        )
 
         while not self.is_correct_hash(untimed_block=untimed_last_block):
             untimed_last_block.count_up_nonce()

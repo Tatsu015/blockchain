@@ -49,12 +49,13 @@ def get_chain():
 @app.post("/chain")
 def post_chain(chain: list[Block]):
     if len(chain) <= len(block_chain.chain):
+        print(len(chain), len(block_chain.chain))
         return {"message": "Received chain is ignored"}
     try:
         block_chain.verify(chain)
         block_chain.replace(chain)
         block_chain.save_chain("chain.json")
-        block_chain.save_transactions("transaction.json")
+        block_chain.save_transactions("transactions.json")
 
     except Exception as e:
         print(e)
