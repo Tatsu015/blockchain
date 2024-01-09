@@ -14,8 +14,8 @@ block_chain.load_chain("chain.json")
 
 
 @app.exception_handler(RequestValidationError)
-async def handler(request: Request, exc: RequestValidationError):
-    print(exc)
+async def handler(request: Request, e: RequestValidationError):
+    print(e)
     return JSONResponse(content={}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
@@ -49,7 +49,6 @@ def get_chain():
 @app.post("/chain")
 def post_chain(chain: list[Block]):
     if len(chain) <= len(block_chain.chain):
-        print(len(chain), len(block_chain.chain))
         return {"message": "Received chain is ignored"}
     try:
         block_chain.verify(chain)
