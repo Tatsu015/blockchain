@@ -55,6 +55,7 @@ def post_chain(chain: list[Block]):
         block_chain.replace(chain)
         block_chain.save_chain("chain.json")
         block_chain.save_transactions("transactions.json")
+        return {"message": "chain is posted"}
 
     except Exception as e:
         print(e)
