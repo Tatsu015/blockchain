@@ -2,6 +2,10 @@ PHONY:dev
 dev:
 	poetry run uvicorn blockchain.main:app --reload --port 8080
 
+PHONY:clean
+clean:
+	rm chain.json transactions.json
+
 PHONY:test
 test:
 	poetry run pytest
