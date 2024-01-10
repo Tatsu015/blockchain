@@ -56,7 +56,7 @@ class BlockChain(BaseModel):
         try:
             with open(path, "r", encoding="utf-8") as file:
                 json_data = json.load(file)
-                self.chain = TypeAdapter(list[Block]).dump_python(json_data)
+                self.chain = TypeAdapter(list[Block]).validate_json(json_data)
 
         except FileNotFoundError as e:
             print(e)
