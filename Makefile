@@ -21,3 +21,7 @@ dev_get:
 PHONY:mining
 mining:
 	poetry run python mining.py
+
+PHONY:keygen
+keygen:
+	poetry run python keygen.py
