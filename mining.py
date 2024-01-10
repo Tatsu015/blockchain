@@ -12,7 +12,7 @@ from blockchain.blockchain import BlockChain
 
 from blockchain.transaction import Transaction
 
-miner = "95029604df9f99e55392a443ea5dff802c41c9548bc182665c2f6b870cc18d0de4a9e438125aab1e63970d2eb4f3859323a6bb0e340fad03cb8b9dac4f52a3b0"
+miner_public_key = "68207f51dfde818044a41a116869e6ddccb6306375f94eff1ea9a69050458e7edd73a2c0e3bafb58b47d51b2f8123543f92ae2413a1f37abcf46ab379dcfc034"
 ip_addr = "127.0.0.1"
 blockchain = BlockChain()
 
@@ -32,7 +32,7 @@ if trans_json == []:
     blockchain.transactions = []
 else:
     blockchain.transactions = TypeAdapter(list[Transaction]).validate_json(trans_json)
-block = blockchain.find_new_block(now=datetime.now(), miner=miner)
+block = blockchain.find_new_block(now=datetime.now(), miner=miner_public_key)
 blockchain.chain.append(block)
 
 data = json.dumps(blockchain.chain, default=pydantic_encoder)
