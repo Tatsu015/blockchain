@@ -20,18 +20,18 @@ res_chain = requests.get("http://" + ip_addr + ":8080/chain")
 if res_chain.status_code != 200:
     print(f"request error: {res_chain.status}")
     sys.exit()
-chain_json = res_chain.json()
-blockchain.chain = TypeAdapter(list[Block]).validate_python(chain_json)
+chain_jstr = res_chain.text
+blockchain.chain = TypeAdapter(list[Block]).validate_json(chain_jstr)
 
 res_trans = requests.get("http://" + ip_addr + ":8080/transaction_pool")
 if res_trans.status_code != 200:
     print(f"request error: {res_trans.status}")
     sys.exit()
-trans_json = res_trans.json()
-if trans_json == []:
+trans_jstr = res_trans.text
+if trans_jstr == "":
     blockchain.transactions = []
 else:
-    blockchain.transactions = TypeAdapter(list[Transaction]).validate_json(trans_json)
+    blockchain.transactions = TypeAdapter(list[Transaction]).validate_json(trans_jstr)
 block = blockchain.find_new_block(now=datetime.now(), miner=miner_public_key)
 blockchain.chain.append(block)
 
