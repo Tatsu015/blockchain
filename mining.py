@@ -29,9 +29,11 @@ if res_trans.status_code != 200:
     sys.exit()
 trans_jstr = res_trans.text
 if trans_jstr == "":
-    blockchain.transactions = []
+    blockchain.transactions_pool = []
 else:
-    blockchain.transactions = TypeAdapter(list[Transaction]).validate_json(trans_jstr)
+    blockchain.transactions_pool = TypeAdapter(list[Transaction]).validate_json(
+        trans_jstr
+    )
 block = blockchain.find_new_block(now=datetime.now(), miner=miner_public_key)
 blockchain.chain.append(block)
 

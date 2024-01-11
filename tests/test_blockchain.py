@@ -25,7 +25,7 @@ def test_restore_transactions():
 
     blockChain2 = BlockChain()
     blockChain2.load_transactios(filepath)
-    transactions = blockChain2.transactions
+    transactions = blockChain2.transactions_pool
 
     assert t1 == transactions[0]
     assert t2 == transactions[1]

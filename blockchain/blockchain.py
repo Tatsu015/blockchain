@@ -21,7 +21,7 @@ class TransactionVerifyError(Exception):
 
 
 class BlockChain(BaseModel):
-    transactions: list[Transaction] = []
+    transactions_pool: list[Transaction] = []
     first_block: Block = Block(
         time=datetime.min, transactions=[], hash_value="SimplestBlockChain", nonce=0
     )
@@ -32,7 +32,7 @@ class BlockChain(BaseModel):
         try:
             with open(path, "r", encoding="utf-8") as file:
                 json_data = json.load(file)
-                self.transactions = TypeAdapter(list[Transaction]).validate_json(
+                self.transactions_pool = TypeAdapter(list[Transaction]).validate_json(
                     json_data
                 )
 
@@ -41,14 +41,14 @@ class BlockChain(BaseModel):
 
     def save_transactions(self, path):
         with open(path, "w", encoding="utf-8") as file:
-            json_data = json.dumps(self.transactions, default=pydantic_encoder)
+            json_data = json.dumps(self.transactions_pool, default=pydantic_encoder)
             json.dump(json_data, file, default=str)
 
     def append(self, transaction: Transaction):
-        if (transaction not in self.transactions) and (
+        if (transaction not in self.transactions_pool) and (
             transaction not in self.all_block_transactions
         ):
-            self.transactions.append(transaction)
+            self.transactions_pool.append(transaction)
         else:
             raise TransactionReuseError("transaction already appended")
 
@@ -108,8 +108,8 @@ class BlockChain(BaseModel):
         self.chain = chain
         self.reset_all_block_transactions()
         for transaction in self.all_block_transactions:
-            if transaction in self.transactions:
-                self.transactions.remove(transaction)
+            if transaction in self.transactions_pool:
+                self.transactions_pool.remove(transaction)
 
     def find_new_block(self, now: datetime, miner: str) -> Block:
         reward_transaction = new_transaction(
@@ -118,7 +118,7 @@ class BlockChain(BaseModel):
             to_public_key=miner,
             amount=REWARD_AMOUNT,
         )
-        transactions = self.transactions.copy()
+        transactions = self.transactions_pool.copy()
         transactions.append(reward_transaction)
         last_block = self.chain[-1]
         last_block_hash = last_block.hash()

@@ -26,7 +26,7 @@ def root():
 
 @app.get("/transaction_pool")
 def get_transaction_pool():
-    return block_chain.transactions
+    return block_chain.transactions_pool
 
 
 @app.post("/transaction_pool")
