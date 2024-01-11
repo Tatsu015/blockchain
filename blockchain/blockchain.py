@@ -142,3 +142,16 @@ class BlockChain(BaseModel):
         hex_hash = format(int(untimed_block.hash(), 16), "0256b")
         hash_end = hex_hash[-POW_DIFFICULTY:]
         return hash_end == "0" * POW_DIFFICULTY
+
+    def accounts(self, transactions: list[Transaction]) -> list[object]:
+        accounts = []
+        copied_transactions = transactions.copy()
+
+        for transaction in copied_transactions:
+            if transaction.sender != "BlockChain":
+                if transaction.sender not in accounts:
+                    accounts[transaction.sender] -= transaction.amount
+                if transaction.receiver not in accounts:
+                    accounts[transaction.receiver] += transaction.amount
+
+        return accounts
