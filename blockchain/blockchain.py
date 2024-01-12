@@ -143,8 +143,8 @@ class BlockChain(BaseModel):
         hash_end = hex_hash[-POW_DIFFICULTY:]
         return hash_end == "0" * POW_DIFFICULTY
 
-    def accounts(self, transactions: list[Transaction]) -> list[object]:
-        accounts = []
+    def accounts(self, transactions: list[Transaction]) -> object:
+        accounts = {}
         copied_transactions = transactions.copy()
 
         for transaction in copied_transactions:
