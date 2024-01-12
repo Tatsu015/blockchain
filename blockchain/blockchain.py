@@ -104,6 +104,9 @@ class BlockChain(BaseModel):
                         else:
                             raise TransactionVerifyError("duplicate transaction")
 
+        if self.has_minus_amount(transactions=all_transactions):
+            raise TransactionVerifyError("has minus amount")
+
     def replace(self, chain: list[Block]):
         self.chain = chain
         self.reset_all_block_transactions()
@@ -155,3 +158,11 @@ class BlockChain(BaseModel):
                     accounts[transaction.receiver] += transaction.amount
 
         return accounts
+
+    def has_minus_amount(self, transactions: list[Transaction]) -> bool:
+        if transactions == []:
+            return False
+        min_amount = min(self.accounts(transactions).values())
+        if min_amount < 0:
+            return False
+        return True
