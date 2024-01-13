@@ -5,9 +5,10 @@ import binascii
 import json
 import os
 from datetime import datetime
+from blockchain.block import Block
 
 from blockchain.transaction import new_transaction
-from blockchain.blockchain import BlockChain, TransactionReuseError
+from blockchain.blockchain import FIRST_BLOCK, BlockChain, TransactionReuseError
 
 
 FROM_SELECT_KEY = "9a77f929737b0b2e90090afc57685d734735052deab172aa5228aa65ee0fcbd2"
@@ -15,7 +16,7 @@ TO_PUBLIC_KEY = "b2ec566cff3702724e86ef6fa0d36835d6d5153ff402bca6dc976b7dc308f4b
 
 
 def test_restore_transactions():
-    filepath = "test_signed_transactions.json"
+    filepath = "test_transactions.json"
     t1 = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
     t2 = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 10)
     blockChain1 = BlockChain()
@@ -33,7 +34,7 @@ def test_restore_transactions():
     os.remove(filepath)
 
 
-def test_add_same_transaction_not_accept():
+def test_append_transactio():
     t = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
     blockChain = BlockChain()
     blockChain.append(t)
@@ -41,3 +42,44 @@ def test_add_same_transaction_not_accept():
     with pytest.raises(TransactionReuseError) as e:
         blockChain.append(t)
     assert str(e.value) == "transaction already appended"
+
+
+def test_restore_chain():
+    filepath = "test_chain.json"
+    blockChain = BlockChain()
+    t1 = new_transaction(
+        time=datetime.now(),
+        from_secret_key=FROM_SELECT_KEY,
+        to_public_key=TO_PUBLIC_KEY,
+        amount=11,
+    )
+    t2 = new_transaction(
+        time=datetime.now(),
+        from_secret_key=FROM_SELECT_KEY,
+        to_public_key=TO_PUBLIC_KEY,
+        amount=22,
+    )
+    t3 = new_transaction(
+        time=datetime.now(),
+        from_secret_key=FROM_SELECT_KEY,
+        to_public_key=TO_PUBLIC_KEY,
+        amount=33,
+    )
+
+    b1 = Block(
+        time=datetime.now(), transactions=[t1, t2], hash_value="testhash1", nonce=12345
+    )
+    b2 = Block(
+        time=datetime.now(), transactions=[t3], hash_value="testhash2", nonce=43234
+    )
+    blockChain.chain.append(b1)
+    blockChain.chain.append(b2)
+
+    blockChain.save_chain(filepath)
+
+    blockChain.load_chain(filepath)
+    assert FIRST_BLOCK == blockChain.chain[0]
+    assert b1 == blockChain.chain[1]
+    assert b2 == blockChain.chain[2]
+
+    os.remove(filepath)

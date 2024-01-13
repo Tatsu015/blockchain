@@ -10,6 +10,9 @@ from blockchain.transaction import Transaction, new_transaction
 POW_DIFFICULTY = 10
 REWARD_AMOUNT = 256
 MINING_SENDER_KEY = "BlockChainBlockChainBlockChain!!".encode("utf-8").hex()
+FIRST_BLOCK = Block(
+    time=datetime.min, transactions=[], hash_value="SimplestBlockChain", nonce=0
+)
 
 
 class TransactionReuseError(Exception):
@@ -22,10 +25,7 @@ class TransactionVerifyError(Exception):
 
 class BlockChain(BaseModel):
     transactions_pool: list[Transaction] = []
-    first_block: Block = Block(
-        time=datetime.min, transactions=[], hash_value="SimplestBlockChain", nonce=0
-    )
-    chain: list[Block] = [first_block]
+    chain: list[Block] = [FIRST_BLOCK]
     all_block_transactions: list[Transaction] = []
 
     def load_transactios(self, path):
@@ -73,7 +73,7 @@ class BlockChain(BaseModel):
         all_transactions = []
         for i, now_block in enumerate(chain):
             if i == 0:
-                if now_block != self.first_block:
+                if now_block != FIRST_BLOCK:
                     raise TransactionVerifyError("first block maybe falsificated")
             else:
                 prev_block = chain[i - 1]
