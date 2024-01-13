@@ -2,6 +2,7 @@ from datetime import datetime
 import json
 from pydantic import BaseModel, TypeAdapter
 from pydantic.json import pydantic_encoder
+from itertools import chain
 
 from blockchain.block import Block, UntimedBlock
 from blockchain.transaction import Transaction, new_transaction
@@ -67,7 +68,9 @@ class BlockChain(BaseModel):
             json.dump(json_data, file, default=str)
 
     def reset_all_block_transactions(self):
-        self.all_block_transactions = [b.transactions for b in self.chain]
+        block_transactions = [b.transactions for b in self.chain]
+        all_transactions = list(chain.from_iterable(block_transactions))
+        self.all_block_transactions = all_transactions
 
     def verify(self, chain: list[Block]):
         all_transactions = []

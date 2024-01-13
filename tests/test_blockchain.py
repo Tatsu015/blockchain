@@ -83,3 +83,40 @@ def test_restore_chain():
     assert b2 == blockChain.chain[2]
 
     os.remove(filepath)
+
+
+def test_reset_all_block_transactions():
+    blockChain = BlockChain()
+    t1 = new_transaction(
+        time=datetime.now(),
+        from_secret_key=FROM_SELECT_KEY,
+        to_public_key=TO_PUBLIC_KEY,
+        amount=11,
+    )
+    t2 = new_transaction(
+        time=datetime.now(),
+        from_secret_key=FROM_SELECT_KEY,
+        to_public_key=TO_PUBLIC_KEY,
+        amount=22,
+    )
+    t3 = new_transaction(
+        time=datetime.now(),
+        from_secret_key=FROM_SELECT_KEY,
+        to_public_key=TO_PUBLIC_KEY,
+        amount=33,
+    )
+
+    b1 = Block(
+        time=datetime.now(), transactions=[t1, t2], hash_value="testhash1", nonce=12345
+    )
+    b2 = Block(
+        time=datetime.now(), transactions=[t3], hash_value="testhash2", nonce=43234
+    )
+    blockChain.chain.append(b1)
+    blockChain.chain.append(b2)
+
+    blockChain.reset_all_block_transactions()
+
+    assert t1 == blockChain.all_block_transactions[0]
+    assert t2 == blockChain.all_block_transactions[1]
+    assert t3 == blockChain.all_block_transactions[2]
