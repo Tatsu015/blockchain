@@ -22,6 +22,10 @@ PHONY:mining
 mining:
 	poetry run python mining.py
 
+PHONY:show_accounts
+show_accounts:
+	poetry run python show_accounts.py
+
 PHONY:keygen
 keygen:
 	poetry run python keygen.py

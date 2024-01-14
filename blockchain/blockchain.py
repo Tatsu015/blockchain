@@ -157,9 +157,11 @@ def accounts(transactions: list[Transaction]) -> object:
     for transaction in copied_transactions:
         if transaction.sender != "BlockChain":
             if transaction.sender not in accounts:
-                accounts[transaction.sender] -= transaction.amount
-            if transaction.receiver not in accounts:
-                accounts[transaction.receiver] += transaction.amount
+                accounts[transaction.sender] = int(0)
+            accounts[transaction.sender] -= transaction.amount
+        if transaction.receiver not in accounts:
+            accounts[transaction.receiver] = int(0)
+        accounts[transaction.receiver] += transaction.amount
 
     return accounts
 
