@@ -149,23 +149,25 @@ class BlockChain(BaseModel):
         hash_end = hex_hash[-POW_DIFFICULTY:]
         return hash_end == "0" * POW_DIFFICULTY
 
-    def accounts(self, transactions: list[Transaction]) -> object:
-        accounts = {}
-        copied_transactions = transactions.copy()
 
-        for transaction in copied_transactions:
-            if transaction.sender != "BlockChain":
-                if transaction.sender not in accounts:
-                    accounts[transaction.sender] -= transaction.amount
-                if transaction.receiver not in accounts:
-                    accounts[transaction.receiver] += transaction.amount
+def accounts(transactions: list[Transaction]) -> object:
+    accounts = {}
+    copied_transactions = transactions.copy()
 
-        return accounts
+    for transaction in copied_transactions:
+        if transaction.sender != "BlockChain":
+            if transaction.sender not in accounts:
+                accounts[transaction.sender] -= transaction.amount
+            if transaction.receiver not in accounts:
+                accounts[transaction.receiver] += transaction.amount
 
-    def has_minus_amount(self, transactions: list[Transaction]) -> bool:
-        if transactions == []:
-            return False
-        min_amount = min(self.accounts(transactions).values())
-        if min_amount < 0:
-            return False
-        return True
+    return accounts
+
+
+def has_minus_amount(transactions: list[Transaction]) -> bool:
+    if transactions == []:
+        return False
+    min_amount = min(accounts(transactions).values())
+    if min_amount < 0:
+        return False
+    return True

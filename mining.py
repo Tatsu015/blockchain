@@ -8,7 +8,7 @@ from pydantic import TypeAdapter
 from pydantic.json import pydantic_encoder
 from blockchain.block import Block
 
-from blockchain.blockchain import BlockChain
+from blockchain.blockchain import BlockChain, has_minus_amount
 
 from blockchain.transaction import Transaction
 
@@ -22,18 +22,30 @@ if res_chain.status_code != 200:
     sys.exit()
 chain_jstr = res_chain.text
 blockchain.chain = TypeAdapter(list[Block]).validate_json(chain_jstr)
+blockchain.all_block_transactions()
 
 res_trans = requests.get("http://" + ip_addr + ":8080/transaction_pool")
 if res_trans.status_code != 200:
     print(f"request error: {res_trans.status}")
     sys.exit()
+
 trans_jstr = res_trans.text
-if trans_jstr == "":
-    blockchain.transactions_pool = []
-else:
-    blockchain.transactions_pool = TypeAdapter(list[Transaction]).validate_json(
-        trans_jstr
-    )
+transactions = []
+if trans_jstr != "":
+    transactions = TypeAdapter(list[Transaction]).validate_json(trans_jstr)
+
+copied_transactions = transactions.copy()
+copied_all_block_transactions = blockchain.all_block_transactions.copy()
+for t in copied_transactions:
+    copied_all_block_transactions.append(t)
+    if has_minus_amount(copied_all_block_transactions):
+        transactions.remove(t)
+        copied_all_block_transactions.remove(t)
+
+
+blockchain.transactions_pool = transactions
+
+
 block = blockchain.find_new_block(now=datetime.now(), miner=miner_public_key)
 blockchain.chain.append(block)
 
