@@ -10,7 +10,7 @@ from blockchain.transaction import Transaction, new_transaction
 
 POW_DIFFICULTY = 10
 REWARD_AMOUNT = 256
-MINING_SENDER_KEY = "BlockChainBlockChainBlockChain!!".encode("utf-8").hex()
+MINING_SENDER_KEY = "BlockChain"
 FIRST_BLOCK = Block(
     time=datetime.min, transactions=[], hash_value="SimplestBlockChain", nonce=0
 )
@@ -118,11 +118,12 @@ class BlockChain(BaseModel):
                 self.transactions_pool.remove(transaction)
 
     def find_new_block(self, now: datetime, miner: str) -> Block:
-        reward_transaction = new_transaction(
+        reward_transaction = Transaction(
             time=now,
-            from_secret_key=MINING_SENDER_KEY,
-            to_public_key=miner,
+            sender=MINING_SENDER_KEY,
+            receiver=miner,
             amount=REWARD_AMOUNT,
+            signature="none",
         )
         transactions = self.transactions_pool.copy()
         transactions.append(reward_transaction)
@@ -155,7 +156,7 @@ def accounts(transactions: list[Transaction]) -> object:
     copied_transactions = transactions.copy()
 
     for transaction in copied_transactions:
-        if transaction.sender != "BlockChain":
+        if transaction.sender != MINING_SENDER_KEY:
             if transaction.sender not in accounts:
                 accounts[transaction.sender] = int(0)
             accounts[transaction.sender] -= transaction.amount
