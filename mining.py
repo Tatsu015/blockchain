@@ -12,7 +12,7 @@ from blockchain.blockchain import BlockChain, has_minus_amount
 
 from blockchain.transaction import Transaction
 
-miner_public_key = "68207f51dfde818044a41a116869e6ddccb6306375f94eff1ea9a69050458e7edd73a2c0e3bafb58b47d51b2f8123543f92ae2413a1f37abcf46ab379dcfc034"
+miner_public_key = "e3a81cfec35827aad5890f96aa19d441c92c5d5a9ba90486be68a0121201957690c23b4788452be49e313e6ed920e59b4d6165d71b82b2d860e5e9a3e25e2c5f"
 ip_addr = "127.0.0.1"
 blockchain = BlockChain()
 
@@ -22,7 +22,7 @@ if res_chain.status_code != 200:
     sys.exit()
 chain_jstr = res_chain.text
 blockchain.chain = TypeAdapter(list[Block]).validate_json(chain_jstr)
-blockchain.all_block_transactions()
+blockchain.reset_all_block_transactions()
 
 res_trans = requests.get("http://" + ip_addr + ":8080/transaction_pool")
 if res_trans.status_code != 200:
