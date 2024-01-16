@@ -3,6 +3,8 @@ from pydantic import BaseModel
 import hashlib
 from blockchain.transaction import Transaction
 
+MINING_SENDER_KEY = "BlockChain"
+
 
 class UntimedBlock(BaseModel):
     transactions: list[Transaction]
@@ -32,3 +34,14 @@ class Block(BaseModel):
         return UntimedBlock(
             transactions=self.transactions, hash_value=self.hash_value, nonce=self.nonce
         )
+
+    def has_many_rewards(self) -> bool:
+        is_reward = False
+        for transaction in self.transactions:
+            if transaction.sender == MINING_SENDER_KEY:
+                if is_reward == True:
+                    return True
+                else:
+                    is_reward = True
+
+        return False

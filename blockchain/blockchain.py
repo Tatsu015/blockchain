@@ -89,14 +89,11 @@ class BlockChain(BaseModel):
                         "chain not satisfy mining success condition"
                     )
 
-                is_reward = False
+                if now_block.has_many_rewards():
+                    raise TransactionVerifyError("chain already contain reward")
+
                 for transaction in now_block.transactions:
                     if transaction.sender == MINING_SENDER_KEY:
-                        if is_reward == True:
-                            raise TransactionVerifyError("chain already contain reward")
-                        else:
-                            is_reward = True
-
                         if transaction.amount != REWARD_AMOUNT:
                             raise TransactionVerifyError("reward amount not correct")
                     else:
