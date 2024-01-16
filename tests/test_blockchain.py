@@ -85,7 +85,7 @@ def test_restore_chain():
     os.remove(filepath)
 
 
-def test_reset_all_block_transactions():
+def test_refresh_all_block_transactions():
     blockChain = BlockChain()
     t1 = new_transaction(
         time=datetime.now(),
