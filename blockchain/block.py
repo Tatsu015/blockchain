@@ -52,3 +52,6 @@ class Block(BaseModel):
                 if transaction.amount != reward_amount:
                     return True
         return False
+
+    def contain(self, transactions: list[Transaction]) -> bool:
+        return any(item in transactions for item in self.transactions)

@@ -95,14 +95,15 @@ class BlockChain(BaseModel):
                 if now_block.has_bad_reward(REWARD_AMOUNT):
                     raise TransactionVerifyError("reward amount not correct")
 
+                if now_block.contain(all_transactions):
+                    raise TransactionVerifyError("duplicate transaction")
+
                 for transaction in now_block.transactions:
                     if transaction.sender != MINING_SENDER_KEY:
                         transaction.verify()
 
                     if transaction not in all_transactions:
                         all_transactions.append(transaction)
-                    else:
-                        raise TransactionVerifyError("duplicate transaction")
 
         if has_minus_amount(transactions=all_transactions):
             raise TransactionVerifyError("minus amount exist")
