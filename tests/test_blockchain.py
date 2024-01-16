@@ -115,7 +115,7 @@ def test_reset_all_block_transactions():
     blockChain.chain.append(b1)
     blockChain.chain.append(b2)
 
-    blockChain.reset_all_block_transactions()
+    blockChain.refresh_all_block_transactions()
 
     assert t1 == blockChain.all_block_transactions[0]
     assert t2 == blockChain.all_block_transactions[1]

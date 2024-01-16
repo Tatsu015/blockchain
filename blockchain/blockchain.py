@@ -67,7 +67,7 @@ class BlockChain(BaseModel):
             json_data = json.dumps(self.chain, default=pydantic_encoder)
             json.dump(json_data, file, default=str)
 
-    def reset_all_block_transactions(self):
+    def refresh_all_block_transactions(self):
         block_transactions = [b.transactions for b in self.chain]
         all_transactions = list(chain.from_iterable(block_transactions))
         self.all_block_transactions = all_transactions
@@ -84,7 +84,7 @@ class BlockChain(BaseModel):
                     raise TransactionVerifyError("chain hash maybe falsificated")
 
                 untime_now_block = now_block.to_untimed()
-                if not self.is_correct_hash(untime_now_block):
+                if not self.__is_correct_hash(untime_now_block):
                     raise TransactionVerifyError(
                         "chain not satisfy mining success condition"
                     )
@@ -112,7 +112,7 @@ class BlockChain(BaseModel):
 
     def replace(self, chain: list[Block]):
         self.chain = chain
-        self.reset_all_block_transactions()
+        self.refresh_all_block_transactions()
         for transaction in self.all_block_transactions:
             if transaction in self.transactions_pool:
                 self.transactions_pool.remove(transaction)
@@ -133,7 +133,7 @@ class BlockChain(BaseModel):
             transactions=transactions, hash_value=last_block_hash, nonce=0
         )
 
-        while not self.is_correct_hash(untimed_block=untimed_last_block):
+        while not self.__is_correct_hash(untimed_block=untimed_last_block):
             untimed_last_block.count_up_nonce()
 
         block = Block(
@@ -145,7 +145,7 @@ class BlockChain(BaseModel):
 
         return block
 
-    def is_correct_hash(self, untimed_block: UntimedBlock) -> bool:
+    def __is_correct_hash(self, untimed_block: UntimedBlock) -> bool:
         hex_hash = format(int(untimed_block.hash(), 16), "0256b")
         hash_end = hex_hash[-POW_DIFFICULTY:]
         return hash_end == "0" * POW_DIFFICULTY

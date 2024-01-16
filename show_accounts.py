@@ -21,6 +21,6 @@ if res_chain.status_code != 200:
     sys.exit()
 chain_jstr = res_chain.text
 blockchain.chain = TypeAdapter(list[Block]).validate_json(chain_jstr)
-blockchain.reset_all_block_transactions()
+blockchain.refresh_all_block_transactions()
 
 print(accounts(blockchain.all_block_transactions))

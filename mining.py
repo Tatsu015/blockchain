@@ -22,7 +22,7 @@ if res_chain.status_code != 200:
     sys.exit()
 chain_jstr = res_chain.text
 blockchain.chain = TypeAdapter(list[Block]).validate_json(chain_jstr)
-blockchain.reset_all_block_transactions()
+blockchain.refresh_all_block_transactions()
 
 res_trans = requests.get("http://" + ip_addr + ":8080/transaction_pool")
 if res_trans.status_code != 200:
