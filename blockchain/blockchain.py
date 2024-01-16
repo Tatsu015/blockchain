@@ -84,7 +84,7 @@ class BlockChain(BaseModel):
                     raise TransactionVerifyError("chain hash maybe falsificated")
 
                 untime_now_block = now_block.to_untimed()
-                if self.__is_wrong_hash(untime_now_block, POW_DIFFICULTY):
+                if untime_now_block.is_wrong_hash(POW_DIFFICULTY):
                     raise TransactionVerifyError(
                         "chain not satisfy mining success condition"
                     )
@@ -129,7 +129,7 @@ class BlockChain(BaseModel):
             transactions=transactions, hash_value=last_block_hash, nonce=0
         )
 
-        while self.__is_wrong_hash(untimed_last_block, POW_DIFFICULTY):
+        while untimed_last_block.is_wrong_hash(POW_DIFFICULTY):
             untimed_last_block.count_up_nonce()
 
         block = Block(
@@ -140,11 +140,6 @@ class BlockChain(BaseModel):
         )
 
         return block
-
-    def __is_wrong_hash(self, untimed_block: UntimedBlock, pow_difficulty: int) -> bool:
-        hex_hash = format(int(untimed_block.hash(), 16), "0256b")
-        hash_end = hex_hash[-pow_difficulty:]
-        return hash_end != "0" * pow_difficulty
 
 
 def accounts(transactions: list[Transaction]) -> object:

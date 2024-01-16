@@ -19,6 +19,11 @@ class UntimedBlock(BaseModel):
     def count_up_nonce(self):
         self.nonce += 1
 
+    def is_wrong_hash(self, pow_difficulty: int) -> bool:
+        hex_hash = format(int(self.hash(), 16), "0256b")
+        hash_end = hex_hash[-pow_difficulty:]
+        return hash_end != "0" * pow_difficulty
+
 
 class Block(BaseModel):
     time: datetime
