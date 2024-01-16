@@ -102,8 +102,7 @@ class BlockChain(BaseModel):
                     if transaction.sender != MINING_SENDER_KEY:
                         transaction.verify()
 
-                    if transaction not in all_transactions:
-                        all_transactions.append(transaction)
+                    all_transactions.append(transaction)
 
         if has_minus_amount(transactions=all_transactions):
             raise TransactionVerifyError("minus amount exist")
