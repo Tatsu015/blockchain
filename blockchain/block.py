@@ -55,3 +55,10 @@ class Block(BaseModel):
 
     def contain(self, transactions: list[Transaction]) -> bool:
         return any(item in transactions for item in self.transactions)
+
+    def verify(self):
+        for transaction in self.transactions:
+            # mining transaction not need to verify
+            # because reward transaction parameter set by hand and not satisfy verification
+            if transaction.sender != MINING_SENDER_KEY:
+                transaction.verify()

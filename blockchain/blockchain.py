@@ -98,10 +98,9 @@ class BlockChain(BaseModel):
                 if now_block.contain(all_transactions):
                     raise TransactionVerifyError("duplicate transaction")
 
-                for transaction in now_block.transactions:
-                    if transaction.sender != MINING_SENDER_KEY:
-                        transaction.verify()
+                now_block.verify()
 
+                for transaction in now_block.transactions:
                     all_transactions.append(transaction)
 
         if has_minus_amount(transactions=all_transactions):
