@@ -45,3 +45,10 @@ class Block(BaseModel):
                     is_reward = True
 
         return False
+
+    def has_bad_reward(self, reward_amount) -> bool:
+        for transaction in self.transactions:
+            if transaction.sender == MINING_SENDER_KEY:
+                if transaction.amount != reward_amount:
+                    return True
+        return False

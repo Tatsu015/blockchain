@@ -92,11 +92,11 @@ class BlockChain(BaseModel):
                 if now_block.has_many_rewards():
                     raise TransactionVerifyError("chain already contain reward")
 
+                if now_block.has_bad_reward(REWARD_AMOUNT):
+                    raise TransactionVerifyError("reward amount not correct")
+
                 for transaction in now_block.transactions:
-                    if transaction.sender == MINING_SENDER_KEY:
-                        if transaction.amount != REWARD_AMOUNT:
-                            raise TransactionVerifyError("reward amount not correct")
-                    else:
+                    if transaction.sender != MINING_SENDER_KEY:
                         transaction.verify()
 
                     if transaction not in all_transactions:
