@@ -102,10 +102,10 @@ class BlockChain(BaseModel):
                     else:
                         transaction.verify()
 
-                        if transaction not in all_transactions:
-                            all_transactions.append(transaction)
-                        else:
-                            raise TransactionVerifyError("duplicate transaction")
+                    if transaction not in all_transactions:
+                        all_transactions.append(transaction)
+                    else:
+                        raise TransactionVerifyError("duplicate transaction")
 
         if has_minus_amount(transactions=all_transactions):
             raise TransactionVerifyError("minus amount exist")
