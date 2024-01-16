@@ -141,8 +141,8 @@ class BlockChain(BaseModel):
         return block
 
 
-def accounts(transactions: list[Transaction]) -> object:
-    accounts = {}
+def accounts(transactions: list[Transaction]) -> dict[str, int]:
+    accounts: dict[str, int] = {}
     copied_transactions = transactions.copy()
 
     for transaction in copied_transactions:
