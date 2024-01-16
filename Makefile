@@ -10,12 +10,12 @@ PHONY:test
 test:
 	poetry run pytest
 
-PHONY:dev_post
-dev_post:
+PHONY:post
+post:
 	poetry run python post.py
 
-PHONY:dev_get
-dev_get:
+PHONY:transaction_pool
+transaction_pool:
 	curl http://127.0.0.1:8080/transaction_pool | jq
 
 PHONY:mining
