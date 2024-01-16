@@ -100,8 +100,7 @@ class BlockChain(BaseModel):
 
                 now_block.verify()
 
-                for transaction in now_block.transactions:
-                    all_transactions.append(transaction)
+                all_transactions.extend(now_block.transactions)
 
         if has_minus_amount(transactions=all_transactions):
             raise TransactionVerifyError("minus amount exist")
