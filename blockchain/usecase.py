@@ -38,8 +38,13 @@ class Usecase:
             print(e)
             return str(e)
 
-    def mining(self, miner_public_key, transactions, chain):
-        blockchain = Blockchain()
+    def mining(
+        self,
+        blockchain: Blockchain,
+        miner_public_key: str,
+        transactions: list[Transaction],
+        chain: list[Block],
+    ) -> str:
         copied_transactions = transactions.copy()
         blockchain.chain = chain
         blockchain.refresh_inblock_transactions()
@@ -59,4 +64,5 @@ class Usecase:
             chain=blockchain.chain,
         )
         blockchain.chain.append(block)
-        return blockchain
+
+        return "mining success"
