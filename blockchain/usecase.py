@@ -4,33 +4,33 @@ from blockchain.transaction import Transaction
 
 
 class Usecase:
-    def __init__(self, blockchain: Blockchain) -> None:
-        self.__blockchain = blockchain
+    def __init__(self) -> None:
+        pass
 
-    def get_outblock_transaction(self) -> list[Transaction]:
-        return self.__blockchain.outblock_transactions
+    def get_outblock_transaction(self, blockchain: Blockchain) -> list[Transaction]:
+        return blockchain.outblock_transactions
 
-    def add_transaction(self, transaction: Transaction) -> str:
+    def add_transaction(self, blockchain: Blockchain, transaction: Transaction) -> str:
         try:
             transaction.verify()
         except Exception as e:
             return e.value
 
-        self.__blockchain.append(transaction)
-        self.__blockchain.save_transactions("transactions.json")
+        blockchain.append(transaction)
+        blockchain.save_transactions("transactions.json")
         return "Transaction is posted"
 
-    def get_chain(self) -> list[Block]:
-        return self.__blockchain.chain
+    def get_chain(self, blockchain: Blockchain) -> list[Block]:
+        return blockchain.chain
 
-    def add_chain(self, chain: list[Block]) -> str:
-        if len(chain) <= len(self.__blockchain.chain):
+    def add_chain(self, blockchain: Blockchain, chain: list[Block]) -> str:
+        if len(chain) <= len(blockchain.chain):
             return "Received chain is ignored"
         try:
-            self.__blockchain.verify(chain)
-            self.__blockchain.replace(chain)
-            self.__blockchain.save_chain("chain.json")
-            self.__blockchain.save_transactions("transactions.json")
+            blockchain.verify(chain)
+            blockchain.replace(chain)
+            blockchain.save_chain("chain.json")
+            blockchain.save_transactions("transactions.json")
             return "chain is posted"
 
         except Exception as e:
