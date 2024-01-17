@@ -8,7 +8,7 @@ from pydantic import TypeAdapter
 from pydantic.json import pydantic_encoder
 from blockchain.block import Block
 
-from blockchain.blockchain import Blockchain, has_minus_amount
+from blockchain.blockchain import Blockchain, find_new_block, has_minus_amount
 
 from blockchain.transaction import Transaction
 
@@ -27,7 +27,12 @@ def mining(miner_public_key, transactions, chain):
 
     blockchain.transactions_pool = transactions
 
-    block = blockchain.find_new_block(now=datetime.now(), miner=miner_public_key)
+    block = find_new_block(
+        now=datetime.now(),
+        miner=miner_public_key,
+        transactions_pool=blockchain.transactions_pool,
+        chain=blockchain.chain,
+    )
     blockchain.chain.append(block)
     return blockchain
 

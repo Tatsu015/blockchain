@@ -112,33 +112,39 @@ class Blockchain(BaseModel):
             if transaction in self.transactions_pool:
                 self.transactions_pool.remove(transaction)
 
-    def find_new_block(self, now: datetime, miner: str) -> Block:
-        reward_transaction = Transaction(
-            time=now,
-            sender=MINING_SENDER_KEY,
-            receiver=miner,
-            amount=REWARD_AMOUNT,
-            signature="none",
-        )
-        transactions = self.transactions_pool.copy()
-        transactions.append(reward_transaction)
-        last_block = self.chain[-1]
-        last_block_hash = last_block.hash()
-        untimed_last_block = UntimedBlock(
-            transactions=transactions, hash_value=last_block_hash, nonce=0
-        )
 
-        while untimed_last_block.is_wrong_hash(POW_DIFFICULTY):
-            untimed_last_block.count_up_nonce()
+def find_new_block(
+    now: datetime,
+    miner: str,
+    transactions_pool: list[Transaction],
+    chain: list[Block],
+) -> Block:
+    reward_transaction = Transaction(
+        time=now,
+        sender=MINING_SENDER_KEY,
+        receiver=miner,
+        amount=REWARD_AMOUNT,
+        signature="none",
+    )
+    transactions = transactions_pool.copy()
+    transactions.append(reward_transaction)
+    last_block = chain[-1]
+    last_block_hash = last_block.hash()
+    untimed_last_block = UntimedBlock(
+        transactions=transactions, hash_value=last_block_hash, nonce=0
+    )
 
-        block = Block(
-            time=datetime.now().isoformat(),
-            transactions=untimed_last_block.transactions,
-            hash_value=last_block_hash,
-            nonce=untimed_last_block.nonce,
-        )
+    while untimed_last_block.is_wrong_hash(POW_DIFFICULTY):
+        untimed_last_block.count_up_nonce()
 
-        return block
+    block = Block(
+        time=datetime.now().isoformat(),
+        transactions=untimed_last_block.transactions,
+        hash_value=last_block_hash,
+        nonce=untimed_last_block.nonce,
+    )
+
+    return block
 
 
 def accounts(transactions: list[Transaction]) -> dict[str, int]:
