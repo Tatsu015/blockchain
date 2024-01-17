@@ -26,14 +26,14 @@ def root():
     return {"message": "ok"}
 
 
-@app.get("/transaction/")
+@app.get("/transaction")
 def get_transaction():
     transactions = usecase.get_outblock_transaction(blockchain=blockchain)
     return transactions
 
 
 @app.post("/transaction")
-def post_transaction_pool(transaction: Transaction):
+def post_transaction(transaction: Transaction):
     message = usecase.add_transaction(blockchain=blockchain, transaction=transaction)
     return {"message": message}
 

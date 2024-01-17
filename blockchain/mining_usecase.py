@@ -19,7 +19,7 @@ def mining(miner_public_key, transactions, chain):
     block = find_new_block(
         now=datetime.now(),
         miner=miner_public_key,
-        transactions_pool=blockchain.outblock_transactions,
+        outblock_transactions=blockchain.outblock_transactions,
         chain=blockchain.chain,
     )
     blockchain.chain.append(block)

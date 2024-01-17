@@ -29,7 +29,7 @@ def load_chain(ip_addr):
 
 
 def load_transactions(ip_addr):
-    res_trans = requests.get("http://" + ip_addr + ":8080/transaction_pool")
+    res_trans = requests.get("http://" + ip_addr + ":8080/transaction")
     if res_trans.status_code != 200:
         print(f"request error: {res_trans.status}")
         sys.exit()

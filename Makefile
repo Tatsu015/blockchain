@@ -14,9 +14,9 @@ PHONY:post
 post:
 	poetry run python post.py
 
-PHONY:transaction_pool
-transaction_pool:
-	curl http://127.0.0.1:8080/transaction_pool | jq
+PHONY:transaction
+transaction:
+	curl http://127.0.0.1:8080/transaction | jq
 
 PHONY:mining
 mining:

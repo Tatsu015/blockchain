@@ -116,7 +116,7 @@ class Blockchain(BaseModel):
 def find_new_block(
     now: datetime,
     miner: str,
-    transactions_pool: list[Transaction],
+    outblock_transactions: list[Transaction],
     chain: list[Block],
 ) -> Block:
     reward_transaction = Transaction(
@@ -126,7 +126,7 @@ def find_new_block(
         amount=REWARD_AMOUNT,
         signature="none",
     )
-    transactions = transactions_pool.copy()
+    transactions = outblock_transactions.copy()
     transactions.append(reward_transaction)
     last_block = chain[-1]
     last_block_hash = last_block.hash()

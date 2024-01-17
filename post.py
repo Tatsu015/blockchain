@@ -13,4 +13,4 @@ t = new_transaction(datetime.now(), from_secret_key, to_public_key, 10)
 
 data = jsonable_encoder(t)
 print("post data:", data)
-res = requests.post("http://127.0.0.1:8080/transaction_pool", json=data)
+res = requests.post("http://127.0.0.1:8080/transaction", json=data)
