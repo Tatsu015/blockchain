@@ -24,7 +24,7 @@ class TransactionVerifyError(Exception):
     pass
 
 
-class BlockChain(BaseModel):
+class Blockchain(BaseModel):
     transactions_pool: list[Transaction] = []
     chain: list[Block] = [FIRST_BLOCK]
     all_block_transactions: list[Transaction] = []

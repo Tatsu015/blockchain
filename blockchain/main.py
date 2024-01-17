@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from blockchain.blockchain import BlockChain, Block
+from blockchain.blockchain import Blockchain, Block
 
 from blockchain.transaction import Transaction
 from blockchain.usecase import Usecase
@@ -9,7 +9,7 @@ from blockchain.usecase import Usecase
 
 app = FastAPI()
 
-blockchain = BlockChain()
+blockchain = Blockchain()
 blockchain.load_transactios("transactions.json")
 blockchain.load_chain("chain.json")
 usecase = Usecase(blockchain=blockchain)

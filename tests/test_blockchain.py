@@ -8,7 +8,7 @@ from datetime import datetime
 from blockchain.block import Block
 
 from blockchain.transaction import new_transaction
-from blockchain.blockchain import FIRST_BLOCK, BlockChain, TransactionReuseError
+from blockchain.blockchain import FIRST_BLOCK, Blockchain, TransactionReuseError
 
 
 FROM_SELECT_KEY = "9a77f929737b0b2e90090afc57685d734735052deab172aa5228aa65ee0fcbd2"
@@ -19,12 +19,12 @@ def test_restore_transactions():
     filepath = "test_transactions.json"
     t1 = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
     t2 = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 10)
-    blockChain1 = BlockChain()
+    blockChain1 = Blockchain()
     blockChain1.append(t1)
     blockChain1.append(t2)
     blockChain1.save_transactions(filepath)
 
-    blockChain2 = BlockChain()
+    blockChain2 = Blockchain()
     blockChain2.load_transactios(filepath)
     transactions = blockChain2.transactions_pool
 
@@ -36,7 +36,7 @@ def test_restore_transactions():
 
 def test_append_transactio():
     t = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
-    blockChain = BlockChain()
+    blockChain = Blockchain()
     blockChain.append(t)
 
     with pytest.raises(TransactionReuseError) as e:
@@ -46,7 +46,7 @@ def test_append_transactio():
 
 def test_restore_chain():
     filepath = "test_chain.json"
-    blockChain = BlockChain()
+    blockChain = Blockchain()
     t1 = new_transaction(
         time=datetime.now(),
         from_secret_key=FROM_SELECT_KEY,
@@ -86,7 +86,7 @@ def test_restore_chain():
 
 
 def test_refresh_all_block_transactions():
-    blockChain = BlockChain()
+    blockChain = Blockchain()
     t1 = new_transaction(
         time=datetime.now(),
         from_secret_key=FROM_SELECT_KEY,

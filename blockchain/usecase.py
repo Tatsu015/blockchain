@@ -1,10 +1,10 @@
 from blockchain.block import Block
-from blockchain.blockchain import BlockChain
+from blockchain.blockchain import Blockchain
 from blockchain.transaction import Transaction
 
 
 class Usecase:
-    def __init__(self, blockchain: BlockChain) -> None:
+    def __init__(self, blockchain: Blockchain) -> None:
         self.__blockchain = blockchain
 
     def get_transaction_pool(self) -> list[Transaction]:
