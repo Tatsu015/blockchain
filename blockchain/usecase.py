@@ -7,10 +7,10 @@ class Usecase:
     def __init__(self, blockchain: Blockchain) -> None:
         self.__blockchain = blockchain
 
-    def get_transaction_pool(self) -> list[Transaction]:
-        return self.__blockchain.transactions_pool
+    def get_outblock_transaction(self) -> list[Transaction]:
+        return self.__blockchain.outblock_transactions
 
-    def add_transaction_pool(self, transaction: Transaction) -> str:
+    def add_transaction(self, transaction: Transaction) -> str:
         try:
             transaction.verify()
         except Exception as e:

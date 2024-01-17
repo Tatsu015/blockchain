@@ -26,15 +26,15 @@ def root():
     return {"message": "ok"}
 
 
-@app.get("/transaction_pool")
-def get_transaction_pool():
-    transactions = usecase.get_transaction_pool()
+@app.get("/transaction/")
+def get_transaction():
+    transactions = usecase.get_outblock_transaction()
     return transactions
 
 
-@app.post("/transaction_pool")
+@app.post("/transaction")
 def post_transaction_pool(transaction: Transaction):
-    message = usecase.add_transaction_pool(transaction)
+    message = usecase.add_transaction(transaction)
     return {"message": message}
 
 

@@ -26,7 +26,7 @@ def test_restore_transactions():
 
     blockChain2 = Blockchain()
     blockChain2.load_transactios(filepath)
-    transactions = blockChain2.transactions_pool
+    transactions = blockChain2.outblock_transactions
 
     assert t1 == transactions[0]
     assert t2 == transactions[1]
@@ -115,8 +115,8 @@ def test_refresh_all_block_transactions():
     blockChain.chain.append(b1)
     blockChain.chain.append(b2)
 
-    blockChain.refresh_all_block_transactions()
+    blockChain.refresh_inblock_transactions()
 
-    assert t1 == blockChain.all_block_transactions[0]
-    assert t2 == blockChain.all_block_transactions[1]
-    assert t3 == blockChain.all_block_transactions[2]
+    assert t1 == blockChain.inblock_transactions[0]
+    assert t2 == blockChain.inblock_transactions[1]
+    assert t3 == blockChain.inblock_transactions[2]

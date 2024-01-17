@@ -25,31 +25,31 @@ class TransactionVerifyError(Exception):
 
 
 class Blockchain(BaseModel):
-    transactions_pool: list[Transaction] = []
+    outblock_transactions: list[Transaction] = []
     chain: list[Block] = [FIRST_BLOCK]
-    all_block_transactions: list[Transaction] = []
+    inblock_transactions: list[Transaction] = []
 
     def load_transactios(self, path):
         try:
             with open(path, "r", encoding="utf-8") as file:
                 json_data = json.load(file)
-                self.transactions_pool = TypeAdapter(list[Transaction]).validate_json(
-                    json_data
-                )
+                self.outblock_transactions = TypeAdapter(
+                    list[Transaction]
+                ).validate_json(json_data)
 
         except FileNotFoundError as e:
             print(e)
 
     def save_transactions(self, path):
         with open(path, "w", encoding="utf-8") as file:
-            json_data = json.dumps(self.transactions_pool, default=pydantic_encoder)
+            json_data = json.dumps(self.outblock_transactions, default=pydantic_encoder)
             json.dump(json_data, file, default=str)
 
     def append(self, transaction: Transaction):
-        if (transaction not in self.transactions_pool) and (
-            transaction not in self.all_block_transactions
+        if (transaction not in self.outblock_transactions) and (
+            transaction not in self.inblock_transactions
         ):
-            self.transactions_pool.append(transaction)
+            self.outblock_transactions.append(transaction)
         else:
             raise TransactionReuseError("transaction already appended")
 
@@ -67,10 +67,10 @@ class Blockchain(BaseModel):
             json_data = json.dumps(self.chain, default=pydantic_encoder)
             json.dump(json_data, file, default=str)
 
-    def refresh_all_block_transactions(self):
+    def refresh_inblock_transactions(self):
         block_transactions = [b.transactions for b in self.chain]
         all_transactions = list(chain.from_iterable(block_transactions))
-        self.all_block_transactions = all_transactions
+        self.inblock_transactions = all_transactions
 
     def verify(self, chain: list[Block]):
         all_transactions = []
@@ -107,10 +107,10 @@ class Blockchain(BaseModel):
 
     def replace(self, chain: list[Block]):
         self.chain = chain
-        self.refresh_all_block_transactions()
-        for transaction in self.all_block_transactions:
-            if transaction in self.transactions_pool:
-                self.transactions_pool.remove(transaction)
+        self.refresh_inblock_transactions()
+        for transaction in self.inblock_transactions:
+            if transaction in self.outblock_transactions:
+                self.outblock_transactions.remove(transaction)
 
 
 def find_new_block(
