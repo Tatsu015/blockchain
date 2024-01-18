@@ -45,6 +45,9 @@ class Usecase:
         transactions: list[Transaction],
         chain: list[Block],
     ) -> str:
+        if len(chain) < 1:
+            return "empty chain not allowed"
+
         copied_transactions = transactions.copy()
         blockchain.chain = chain
         blockchain.refresh_inblock_transactions()
