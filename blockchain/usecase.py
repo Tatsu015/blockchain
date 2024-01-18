@@ -4,6 +4,10 @@ from blockchain.blockchain import Blockchain, find_new_block, has_minus_amount
 from blockchain.transaction import Transaction
 
 
+class MiningError(Exception):
+    pass
+
+
 class Usecase:
     def __init__(self) -> None:
         pass
@@ -44,9 +48,9 @@ class Usecase:
         miner_public_key: str,
         transactions: list[Transaction],
         chain: list[Block],
-    ) -> str:
+    ) -> Block:
         if len(chain) < 1:
-            return "empty chain not allowed"
+            raise MiningError("empty chain not allowed")
 
         copied_transactions = transactions.copy()
         blockchain.chain = chain
@@ -66,6 +70,5 @@ class Usecase:
             outblock_transactions=blockchain.outblock_transactions,
             chain=blockchain.chain,
         )
-        blockchain.chain.append(block)
 
-        return "mining success"
+        return block

@@ -1,6 +1,6 @@
 from datetime import datetime
 import json
-from pydantic import BaseModel, TypeAdapter
+from pydantic import TypeAdapter
 from pydantic.json import pydantic_encoder
 from itertools import chain
 
@@ -23,10 +23,11 @@ class TransactionVerifyError(Exception):
     pass
 
 
-class Blockchain(BaseModel):
-    outblock_transactions: list[Transaction] = []
-    chain: list[Block] = [FIRST_BLOCK]
-    inblock_transactions: list[Transaction] = []
+class Blockchain:
+    def __init__(self) -> None:
+        self.outblock_transactions: list[Transaction] = []
+        self.chain: list[Block] = [FIRST_BLOCK]
+        self.inblock_transactions: list[Transaction] = []
 
     def load_transactios(self, path):
         try:

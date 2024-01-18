@@ -44,11 +44,11 @@ chain = load_chain(ip_addr)
 transactions = load_transactions(ip_addr)
 blockchain = Blockchain()
 usecase = Usecase()
-message = usecase.mining(blockchain, miner_public_key, transactions, chain)
-
+new_block = usecase.mining(blockchain, miner_public_key, transactions, chain)
+blockchain.chain.append(new_block)
 data = json.dumps(blockchain.chain, default=pydantic_encoder)
 
-print(message)
+print("success to mining")
 res = requests.post("http://" + ip_addr + ":8080/chain", data=data)
 
 print("response:", res.text)
