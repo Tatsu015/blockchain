@@ -4,13 +4,12 @@ from pydantic import BaseModel, TypeAdapter
 from pydantic.json import pydantic_encoder
 from itertools import chain
 
-from blockchain.block import Block, UntimedBlock
+from blockchain.block import MINING_SENDER_KEY, Block, UntimedBlock
 from blockchain.transaction import Transaction, new_transaction
 
 
 POW_DIFFICULTY = 10
 REWARD_AMOUNT = 256
-MINING_SENDER_KEY = "BlockChain"
 FIRST_BLOCK = Block(
     time=datetime.min, transactions=[], hash_value="SimplestBlockChain", nonce=0
 )

@@ -16,4 +16,9 @@ def test_usecase():
     )
 
     assert sut.get_outblock_transaction(blockchain) == []
-    assert sut.get_chain(blockchain) != []
+    chain = sut.get_chain(blockchain)
+    assert len(chain) == 2
+    assert chain[0].transactions == []
+    reward_transaction = chain[1].transactions[0]
+    assert reward_transaction.amount == 256
+    assert reward_transaction.sender == "Blockchain"

@@ -3,7 +3,7 @@ from pydantic import BaseModel
 import hashlib
 from blockchain.transaction import Transaction
 
-MINING_SENDER_KEY = "BlockChain"
+MINING_SENDER_KEY = "Blockchain"
 
 
 class UntimedBlock(BaseModel):
