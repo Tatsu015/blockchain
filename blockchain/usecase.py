@@ -9,33 +9,34 @@ class MiningError(Exception):
 
 
 class Usecase:
-    def __init__(self) -> None:
+    def __init__(self, blockchain: Blockchain) -> None:
+        self._blockchain = blockchain
         pass
 
-    def get_outblock_transaction(self, blockchain: Blockchain) -> list[Transaction]:
-        return blockchain.outblock_transactions
+    def get_outblock_transaction(self) -> list[Transaction]:
+        return self._blockchain.outblock_transactions
 
-    def add_transaction(self, blockchain: Blockchain, transaction: Transaction) -> str:
+    def add_transaction(self, transaction: Transaction) -> str:
         try:
             transaction.verify()
         except Exception as e:
             return e.value
 
-        blockchain.add_transaction(transaction)
-        blockchain.save_transactions("transactions.json")
+        self._blockchain.add_transaction(transaction)
+        self._blockchain.save_transactions("transactions.json")
         return "Transaction is posted"
 
-    def get_chain(self, blockchain: Blockchain) -> list[Block]:
-        return blockchain.chain
+    def get_chain(self) -> list[Block]:
+        return self._blockchain.chain
 
-    def add_chain(self, blockchain: Blockchain, chain: list[Block]) -> str:
-        if len(chain) <= len(blockchain.chain):
+    def add_chain(self, chain: list[Block]) -> str:
+        if len(chain) <= len(self._blockchain.chain):
             return "Received chain is ignored"
         try:
-            blockchain.verify(chain)
-            blockchain.replace(chain)
-            blockchain.save_chain("chain.json")
-            blockchain.save_transactions("transactions.json")
+            self._blockchain.verify(chain)
+            self._blockchain.replace(chain)
+            self._blockchain.save_chain("chain.json")
+            self._blockchain.save_transactions("transactions.json")
             return "chain is posted"
 
         except Exception as e:
@@ -44,7 +45,6 @@ class Usecase:
 
     def mining(
         self,
-        blockchain: Blockchain,
         miner_public_key: str,
         outblock_transactions: list[Transaction],
         chain: list[Block],
@@ -53,21 +53,23 @@ class Usecase:
             raise MiningError("empty chain not allowed")
 
         copied_outblock_transactions = outblock_transactions.copy()
-        blockchain.chain = chain
-        copied_inblock_transactions = blockchain.integrate_inblock_transactions().copy()
+        self._blockchain.chain = chain
+        copied_inblock_transactions = (
+            self._blockchain.integrate_inblock_transactions().copy()
+        )
         for t in copied_outblock_transactions:
             copied_inblock_transactions.append(t)
             if has_minus_amount(copied_inblock_transactions):
                 outblock_transactions.remove(t)
                 copied_inblock_transactions.remove(t)
 
-        blockchain._outblock_transactions = outblock_transactions
+        self._blockchain._outblock_transactions = outblock_transactions
 
         block = find_new_block(
             now=datetime.now(),
             miner=miner_public_key,
-            outblock_transactions=blockchain.outblock_transactions,
-            chain=blockchain.chain,
+            outblock_transactions=self._blockchain.outblock_transactions,
+            chain=self._blockchain.chain,
         )
 
         return block

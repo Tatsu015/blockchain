@@ -20,22 +20,22 @@ def test_usecase1():
     remote_blockchain = Blockchain(outblock_transactions=[], chain=[])
     local_blockchain = Blockchain(outblock_transactions=[], chain=[])
 
-    uc = Usecase()
+    remote_uc = Usecase(remote_blockchain)
+    local_uc = Usecase(local_blockchain)
 
     ###
     # first mining
     ###
-    new_block = uc.mining(
-        blockchain=local_blockchain,
+    new_block = local_uc.mining(
         miner_public_key=pub_key_a,
         outblock_transactions=[],
         chain=remote_blockchain.chain.copy(),  # use default chain
     )
     local_blockchain.add_block(new_block)
-    uc.add_chain(blockchain=remote_blockchain, chain=local_blockchain.chain)
+    remote_uc.add_chain(chain=local_blockchain.chain)
 
-    chain = uc.get_chain(remote_blockchain)
-    transactions = uc.get_outblock_transaction(remote_blockchain)
+    chain = remote_uc.get_chain()
+    transactions = remote_uc.get_outblock_transaction()
 
     # initial chain and first create chain exist
     assert transactions == []
@@ -49,8 +49,7 @@ def test_usecase1():
     ###
     # 1st transaction create
     ###
-    uc.add_transaction(
-        remote_blockchain,
+    remote_uc.add_transaction(
         new_transaction(
             time=datetime.now(),
             from_secret_key=sec_key_a,
@@ -59,8 +58,8 @@ def test_usecase1():
         ),
     )
 
-    chain = uc.get_chain(remote_blockchain)
-    transactions = uc.get_outblock_transaction(remote_blockchain)
+    chain = remote_uc.get_chain()
+    transactions = remote_uc.get_outblock_transaction()
 
     assert len(transactions) == 1
     assert transactions[0].amount == 123
@@ -76,18 +75,17 @@ def test_usecase1():
     ###
     # 2nd mining
     ###
-    new_block = uc.mining(
-        blockchain=local_blockchain,
+    new_block = local_uc.mining(
         miner_public_key=pub_key_b,
         outblock_transactions=remote_blockchain.outblock_transactions,
         chain=remote_blockchain.chain.copy(),
     )
 
     local_blockchain.add_block(new_block)
-    uc.add_chain(remote_blockchain, local_blockchain.chain)
+    remote_uc.add_chain(local_blockchain.chain)
 
-    chain = uc.get_chain(remote_blockchain)
-    transactions = uc.get_outblock_transaction(remote_blockchain)
+    chain = remote_uc.get_chain()
+    transactions = remote_uc.get_outblock_transaction()
 
     assert len(transactions) == 0
     assert len(chain) == 3
