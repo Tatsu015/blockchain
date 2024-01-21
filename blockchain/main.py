@@ -1,16 +1,28 @@
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from blockchain.blockchain import Blockchain, Block
+from blockchain.blockchain import FIRST_BLOCK, Blockchain, Block
+from blockchain.chain_repository_impl import ChainRepositoryImpl
 
 from blockchain.transaction import Transaction
+from blockchain.transaction_repository_impl import TransactionRepositoryImpl
 from blockchain.usecase import Usecase
 
 
 app = FastAPI()
 
+transaction_repo = TransactionRepositoryImpl("transactions.json")
+transactions = transaction_repo.load_transactios()
+
+chain_repo = ChainRepositoryImpl("chain.json")
+chain = chain_repo.load_chain()
+if chain == []:
+    chain = [FIRST_BLOCK]
+
 blockchain = Blockchain()
-blockchain.load_transactios("transactions.json")
+blockchain.outblock_transactions = transactions
+blockchain.chain = chain
+
 blockchain.load_chain("chain.json")
 usecase = Usecase()
 

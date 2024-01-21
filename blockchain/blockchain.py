@@ -41,6 +41,10 @@ class Blockchain:
     def inblock_transactions(self) -> list[Transaction]:
         return self._inblock_transactions
 
+    @outblock_transactions.setter
+    def outblock_transactions(self, value):
+        self._outblock_transactions = value
+
     @chain.setter
     def chain(self, value):
         self._chain = value
