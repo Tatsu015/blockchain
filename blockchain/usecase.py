@@ -21,7 +21,7 @@ class Usecase:
         except Exception as e:
             return e.value
 
-        blockchain.append(transaction)
+        blockchain.add_transaction(transaction)
         blockchain.save_transactions("transactions.json")
         return "Transaction is posted"
 
@@ -62,7 +62,7 @@ class Usecase:
                 transactions.remove(t)
                 copied_all_block_transactions.remove(t)
 
-        blockchain.outblock_transactions = transactions
+        blockchain._outblock_transactions = transactions
 
         block = find_new_block(
             now=datetime.now(),

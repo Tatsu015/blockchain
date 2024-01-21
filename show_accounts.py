@@ -20,7 +20,8 @@ if res_chain.status_code != 200:
     print(f"request error: {res_chain.status}")
     sys.exit()
 chain_jstr = res_chain.text
-blockchain.chain = TypeAdapter(list[Block]).validate_json(chain_jstr)
+chain = TypeAdapter(list[Block]).validate_json(chain_jstr)
+blockchain.chain = chain
 blockchain.refresh_inblock_transactions()
 
-print(accounts(blockchain.inblock_transactions))
+print(accounts(blockchain._inblock_transactions))

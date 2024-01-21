@@ -45,7 +45,7 @@ transactions = load_transactions(ip_addr)
 blockchain = Blockchain()
 usecase = Usecase()
 new_block = usecase.mining(blockchain, miner_public_key, transactions, chain)
-blockchain.chain.append(new_block)
+blockchain.add_block(new_block)
 data = json.dumps(blockchain.chain, default=pydantic_encoder)
 
 print("success to mining")

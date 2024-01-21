@@ -25,15 +25,31 @@ class TransactionVerifyError(Exception):
 
 class Blockchain:
     def __init__(self) -> None:
-        self.outblock_transactions: list[Transaction] = []
-        self.chain: list[Block] = [FIRST_BLOCK]
-        self.inblock_transactions: list[Transaction] = []
+        self._outblock_transactions: list[Transaction] = []
+        self._chain: list[Block] = [FIRST_BLOCK]
+        self._inblock_transactions: list[Transaction] = []
+
+    @property
+    def outblock_transactions(self) -> list[Transaction]:
+        return self._outblock_transactions
+
+    @property
+    def chain(self) -> list[Block]:
+        return self._chain
+
+    @property
+    def inblock_transactions(self) -> list[Transaction]:
+        return self._inblock_transactions
+
+    @chain.setter
+    def chain(self, value):
+        self._chain = value
 
     def load_transactios(self, path):
         try:
             with open(path, "r", encoding="utf-8") as file:
                 json_data = json.load(file)
-                self.outblock_transactions = TypeAdapter(
+                self._outblock_transactions = TypeAdapter(
                     list[Transaction]
                 ).validate_json(json_data)
 
@@ -42,14 +58,16 @@ class Blockchain:
 
     def save_transactions(self, path):
         with open(path, "w", encoding="utf-8") as file:
-            json_data = json.dumps(self.outblock_transactions, default=pydantic_encoder)
+            json_data = json.dumps(
+                self._outblock_transactions, default=pydantic_encoder
+            )
             json.dump(json_data, file, default=str)
 
-    def append(self, transaction: Transaction):
-        if (transaction not in self.outblock_transactions) and (
-            transaction not in self.inblock_transactions
+    def add_transaction(self, transaction: Transaction):
+        if (transaction not in self._outblock_transactions) and (
+            transaction not in self._inblock_transactions
         ):
-            self.outblock_transactions.append(transaction)
+            self._outblock_transactions.append(transaction)
         else:
             raise TransactionReuseError("transaction already appended")
 
@@ -57,20 +75,23 @@ class Blockchain:
         try:
             with open(path, "r", encoding="utf-8") as file:
                 json_data = json.load(file)
-                self.chain = TypeAdapter(list[Block]).validate_json(json_data)
+                self._chain = TypeAdapter(list[Block]).validate_json(json_data)
 
         except FileNotFoundError as e:
             print(e)
 
     def save_chain(self, path):
         with open(path, "w", encoding="utf-8") as file:
-            json_data = json.dumps(self.chain, default=pydantic_encoder)
+            json_data = json.dumps(self._chain, default=pydantic_encoder)
             json.dump(json_data, file, default=str)
 
+    def add_block(self, block: Block):
+        self._chain.append(block)
+
     def refresh_inblock_transactions(self):
-        block_transactions = [b.transactions for b in self.chain]
+        block_transactions = [b.transactions for b in self._chain]
         all_transactions = list(chain.from_iterable(block_transactions))
-        self.inblock_transactions = all_transactions
+        self._inblock_transactions = all_transactions
 
     def verify(self, chain: list[Block]):
         all_transactions = []
@@ -106,11 +127,11 @@ class Blockchain:
             raise TransactionVerifyError("minus amount exist")
 
     def replace(self, chain: list[Block]):
-        self.chain = chain
+        self._chain = chain
         self.refresh_inblock_transactions()
-        for transaction in self.inblock_transactions:
-            if transaction in self.outblock_transactions:
-                self.outblock_transactions.remove(transaction)
+        for transaction in self._inblock_transactions:
+            if transaction in self._outblock_transactions:
+                self._outblock_transactions.remove(transaction)
 
 
 def find_new_block(
