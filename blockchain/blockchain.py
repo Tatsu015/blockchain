@@ -24,10 +24,15 @@ class TransactionVerifyError(Exception):
 
 
 class Blockchain:
-    def __init__(self) -> None:
-        self._outblock_transactions: list[Transaction] = []
-        self._chain: list[Block] = [FIRST_BLOCK]
+    def __init__(
+        self, outblock_transactions: list[Transaction], chain: list[Block]
+    ) -> None:
+        self._outblock_transactions: list[Transaction] = outblock_transactions
+        self._chain: list[Block] = chain
         self._inblock_transactions: list[Transaction] = []
+
+        if self._chain == []:
+            self._chain = [FIRST_BLOCK]
 
     @property
     def outblock_transactions(self) -> list[Transaction]:

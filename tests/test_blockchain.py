@@ -9,7 +9,7 @@ from blockchain.block import Block
 from blockchain.chain_repository_impl import ChainRepositoryImpl
 
 from blockchain.transaction import new_transaction
-from blockchain.blockchain import FIRST_BLOCK, Blockchain, TransactionReuseError
+from blockchain.blockchain import Blockchain, TransactionReuseError
 from blockchain.transaction_repository_impl import TransactionRepositoryImpl
 
 
@@ -36,7 +36,7 @@ def test_restore_transactions():
 
 def test_append_transactio():
     t = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
-    blockChain = Blockchain()
+    blockChain = Blockchain(outblock_transactions=[], chain=[])
     blockChain.add_transaction(t)
 
     with pytest.raises(TransactionReuseError) as e:

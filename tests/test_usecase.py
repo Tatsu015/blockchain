@@ -17,8 +17,8 @@ sec_key_d = "880f333800e295a892b7dc7a3a41f70430b8fdc8bc5832728f93ed636ea5cd5b"
 
 
 def test_usecase1():
-    remote_blockchain = Blockchain()
-    local_blockchain = Blockchain()
+    remote_blockchain = Blockchain(outblock_transactions=[], chain=[])
+    local_blockchain = Blockchain(outblock_transactions=[], chain=[])
 
     uc = Usecase()
 

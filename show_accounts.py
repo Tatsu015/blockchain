@@ -13,7 +13,6 @@ from blockchain.blockchain import Blockchain, accounts, has_minus_amount
 from blockchain.transaction import Transaction
 
 ip_addr = "127.0.0.1"
-blockchain = Blockchain()
 
 res_chain = requests.get("http://" + ip_addr + ":8080/chain")
 if res_chain.status_code != 200:
@@ -21,7 +20,7 @@ if res_chain.status_code != 200:
     sys.exit()
 chain_jstr = res_chain.text
 chain = TypeAdapter(list[Block]).validate_json(chain_jstr)
-blockchain.chain = chain
+blockchain = Blockchain(outblock_transactions=[], chain=chain)
 blockchain.refresh_inblock_transactions()
 
 print(accounts(blockchain._inblock_transactions))

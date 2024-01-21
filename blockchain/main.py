@@ -19,9 +19,7 @@ chain = chain_repo.load_chain()
 if chain == []:
     chain = [FIRST_BLOCK]
 
-blockchain = Blockchain()
-blockchain.outblock_transactions = transactions
-blockchain.chain = chain
+blockchain = Blockchain(outblock_transactions=transactions, chain=chain)
 
 blockchain.load_chain("chain.json")
 usecase = Usecase()

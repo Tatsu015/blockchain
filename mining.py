@@ -42,7 +42,7 @@ def load_transactions(ip_addr):
 
 chain = load_chain(ip_addr)
 transactions = load_transactions(ip_addr)
-blockchain = Blockchain()
+blockchain = Blockchain(transactions, chain)
 usecase = Usecase()
 new_block = usecase.mining(blockchain, miner_public_key, transactions, chain)
 blockchain.add_block(new_block)
