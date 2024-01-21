@@ -46,7 +46,7 @@ def test_append_transactio():
 
 def test_restore_chain():
     filepath = "test_chain.json"
-    blockChain = Blockchain()
+    chain_transactions1 = ChainRepositoryImpl(filepath)
     t1 = new_transaction(
         time=datetime.now(),
         from_secret_key=FROM_SELECT_KEY,
@@ -72,15 +72,12 @@ def test_restore_chain():
     b2 = Block(
         time=datetime.now(), transactions=[t3], hash_value="testhash2", nonce=43234
     )
-    blockChain.add_block(b1)
-    blockChain.add_block(b2)
+    chain_transactions1.save_chain([b1, b2])
 
-    blockChain.save_chain(filepath)
-
-    blockChain.load_chain(filepath)
-    assert FIRST_BLOCK == blockChain.chain[0]
-    assert b1 == blockChain.chain[1]
-    assert b2 == blockChain.chain[2]
+    chain_transactions2 = ChainRepositoryImpl(filepath)
+    chain = chain_transactions2.load_chain()
+    assert b1 == chain[0]
+    assert b2 == chain[1]
 
     os.remove(filepath)
 
