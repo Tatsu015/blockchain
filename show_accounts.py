@@ -21,6 +21,5 @@ if res_chain.status_code != 200:
 chain_jstr = res_chain.text
 chain = TypeAdapter(list[Block]).validate_json(chain_jstr)
 blockchain = Blockchain(outblock_transactions=[], chain=chain)
-blockchain.refresh_inblock_transactions()
 
-print(accounts(blockchain._inblock_transactions))
+print(accounts(blockchain.integrate_inblock_transactions()))

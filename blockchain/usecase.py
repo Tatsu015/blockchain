@@ -46,23 +46,22 @@ class Usecase:
         self,
         blockchain: Blockchain,
         miner_public_key: str,
-        transactions: list[Transaction],
+        outblock_transactions: list[Transaction],
         chain: list[Block],
     ) -> Block:
         if len(chain) < 1:
             raise MiningError("empty chain not allowed")
 
-        copied_transactions = transactions.copy()
+        copied_outblock_transactions = outblock_transactions.copy()
         blockchain.chain = chain
-        blockchain.refresh_inblock_transactions()
-        copied_all_block_transactions = blockchain.inblock_transactions.copy()
-        for t in copied_transactions:
-            copied_all_block_transactions.append(t)
-            if has_minus_amount(copied_all_block_transactions):
-                transactions.remove(t)
-                copied_all_block_transactions.remove(t)
+        copied_inblock_transactions = blockchain.integrate_inblock_transactions().copy()
+        for t in copied_outblock_transactions:
+            copied_inblock_transactions.append(t)
+            if has_minus_amount(copied_inblock_transactions):
+                outblock_transactions.remove(t)
+                copied_inblock_transactions.remove(t)
 
-        blockchain._outblock_transactions = transactions
+        blockchain._outblock_transactions = outblock_transactions
 
         block = find_new_block(
             now=datetime.now(),

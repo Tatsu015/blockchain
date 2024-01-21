@@ -97,10 +97,10 @@ class Blockchain:
     def add_block(self, block: Block):
         self._chain.append(block)
 
-    def refresh_inblock_transactions(self):
+    def integrate_inblock_transactions(self) -> list[Transaction]:
         block_transactions = [b.transactions for b in self._chain]
         all_transactions = list(chain.from_iterable(block_transactions))
-        self._inblock_transactions = all_transactions
+        return all_transactions
 
     def verify(self, chain: list[Block]):
         all_transactions = []
@@ -137,7 +137,7 @@ class Blockchain:
 
     def replace(self, chain: list[Block]):
         self._chain = chain
-        self.refresh_inblock_transactions()
+        self._inblock_transactions = self.integrate_inblock_transactions()
         for transaction in self._inblock_transactions:
             if transaction in self._outblock_transactions:
                 self._outblock_transactions.remove(transaction)

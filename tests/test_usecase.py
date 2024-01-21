@@ -28,7 +28,7 @@ def test_usecase1():
     new_block = uc.mining(
         blockchain=local_blockchain,
         miner_public_key=pub_key_a,
-        transactions=[],
+        outblock_transactions=[],
         chain=remote_blockchain.chain.copy(),  # use default chain
     )
     local_blockchain.add_block(new_block)
@@ -79,7 +79,7 @@ def test_usecase1():
     new_block = uc.mining(
         blockchain=local_blockchain,
         miner_public_key=pub_key_b,
-        transactions=remote_blockchain.outblock_transactions,
+        outblock_transactions=remote_blockchain.outblock_transactions,
         chain=remote_blockchain.chain.copy(),
     )
 
@@ -104,8 +104,7 @@ def test_usecase1():
     assert chain[2].transactions[1].sender == "Blockchain"
     assert chain[2].transactions[1].receiver == pub_key_b
 
-    local_blockchain.refresh_inblock_transactions()
-    acs = accounts(local_blockchain._inblock_transactions)
+    acs = accounts(local_blockchain.integrate_inblock_transactions())
     assert acs[pub_key_a] == 133
     assert acs[pub_key_b] == 379
 

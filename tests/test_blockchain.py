@@ -82,38 +82,38 @@ def test_restore_chain():
     os.remove(filepath)
 
 
-# def test_refresh_all_block_transactions():
-#     blockChain = Blockchain()
-#     t1 = new_transaction(
-#         time=datetime.now(),
-#         from_secret_key=FROM_SELECT_KEY,
-#         to_public_key=TO_PUBLIC_KEY,
-#         amount=11,
-#     )
-#     t2 = new_transaction(
-#         time=datetime.now(),
-#         from_secret_key=FROM_SELECT_KEY,
-#         to_public_key=TO_PUBLIC_KEY,
-#         amount=22,
-#     )
-#     t3 = new_transaction(
-#         time=datetime.now(),
-#         from_secret_key=FROM_SELECT_KEY,
-#         to_public_key=TO_PUBLIC_KEY,
-#         amount=33,
-#     )
+def test_get_inblock_transactions():
+    blockChain = Blockchain([], [])
+    t1 = new_transaction(
+        time=datetime.now(),
+        from_secret_key=FROM_SELECT_KEY,
+        to_public_key=TO_PUBLIC_KEY,
+        amount=11,
+    )
+    t2 = new_transaction(
+        time=datetime.now(),
+        from_secret_key=FROM_SELECT_KEY,
+        to_public_key=TO_PUBLIC_KEY,
+        amount=22,
+    )
+    t3 = new_transaction(
+        time=datetime.now(),
+        from_secret_key=FROM_SELECT_KEY,
+        to_public_key=TO_PUBLIC_KEY,
+        amount=33,
+    )
 
-#     b1 = Block(
-#         time=datetime.now(), transactions=[t1, t2], hash_value="testhash1", nonce=12345
-#     )
-#     b2 = Block(
-#         time=datetime.now(), transactions=[t3], hash_value="testhash2", nonce=43234
-#     )
-#     blockChain.append_block(b1)
-#     blockChain.append_block(b2)
+    b1 = Block(
+        time=datetime.now(), transactions=[t1, t2], hash_value="testhash1", nonce=12345
+    )
+    b2 = Block(
+        time=datetime.now(), transactions=[t3], hash_value="testhash2", nonce=43234
+    )
+    blockChain.add_block(b1)
+    blockChain.add_block(b2)
 
-#     blockChain.refresh_inblock_transactions()
+    inblock_transactions = blockChain.integrate_inblock_transactions()
 
-#     assert t1 == blockChain.__inblock_transactions[0]
-#     assert t2 == blockChain.__inblock_transactions[1]
-#     assert t3 == blockChain.__inblock_transactions[2]
+    assert t1 == inblock_transactions[0]
+    assert t2 == inblock_transactions[1]
+    assert t3 == inblock_transactions[2]
