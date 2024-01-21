@@ -6,9 +6,11 @@ import json
 import os
 from datetime import datetime
 from blockchain.block import Block
+from blockchain.chain_repository_impl import ChainRepositoryImpl
 
 from blockchain.transaction import new_transaction
 from blockchain.blockchain import FIRST_BLOCK, Blockchain, TransactionReuseError
+from blockchain.transaction_repository_impl import TransactionRepositoryImpl
 
 
 FROM_SELECT_KEY = "9a77f929737b0b2e90090afc57685d734735052deab172aa5228aa65ee0fcbd2"
@@ -17,16 +19,14 @@ TO_PUBLIC_KEY = "b2ec566cff3702724e86ef6fa0d36835d6d5153ff402bca6dc976b7dc308f4b
 
 def test_restore_transactions():
     filepath = "test_transactions.json"
+
+    transaction_repo1 = TransactionRepositoryImpl(filepath)
     t1 = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 1)
     t2 = new_transaction(datetime.now(), FROM_SELECT_KEY, TO_PUBLIC_KEY, 10)
-    blockChain1 = Blockchain()
-    blockChain1.add_transaction(t1)
-    blockChain1.add_transaction(t2)
-    blockChain1.save_transactions(filepath)
+    transaction_repo1.save_transactions([t1, t2])
 
-    blockChain2 = Blockchain()
-    blockChain2.load_transactios(filepath)
-    transactions = blockChain2.outblock_transactions
+    transaction_repo2 = TransactionRepositoryImpl(filepath)
+    transactions = transaction_repo2.load_transactios()
 
     assert t1 == transactions[0]
     assert t2 == transactions[1]
