@@ -1,5 +1,10 @@
 from datetime import datetime
-from blockchain.blockchain import Blockchain, accounts, integrate_inblock_transactions
+from blockchain.blockchain import (
+    Blockchain,
+    accounts,
+    integrate_inblock_transactions,
+    mining,
+)
 from blockchain.transaction import new_transaction
 from blockchain.usecase import Usecase
 
@@ -24,14 +29,17 @@ def test_usecase1():
     ###
     # first mining
     ###
-    local_blockchain1 = Blockchain(outblock_transactions=[], chain=[])
-    new_block = local_blockchain1.mining(
-        miner_public_key=pub_key_a,
+    local_blockchain1 = Blockchain(
         outblock_transactions=remote_blockchain.outblock_transactions.copy(),
         chain=remote_blockchain.chain.copy(),
     )
+    new_block = mining(
+        miner_public_key=pub_key_a,
+        outblock_transactions=local_blockchain1.outblock_transactions.copy(),
+        chain=local_blockchain1.chain.copy(),
+    )
     local_blockchain1.add_block(new_block)
-    remote_uc.update_chain(chain=local_blockchain1.chain)
+    remote_uc.update_chain(local_blockchain1.chain)
 
     chain = remote_uc.get_chain()
     transactions = remote_uc.get_outblock_transaction()
@@ -74,11 +82,14 @@ def test_usecase1():
     ###
     # 2nd mining
     ###
-    local_blockchain2 = Blockchain(outblock_transactions=[], chain=[])
-    new_block = local_blockchain2.mining(
-        miner_public_key=pub_key_b,
+    local_blockchain2 = Blockchain(
         outblock_transactions=remote_blockchain.outblock_transactions.copy(),
         chain=remote_blockchain.chain.copy(),
+    )
+    new_block = mining(
+        miner_public_key=pub_key_b,
+        outblock_transactions=local_blockchain2.outblock_transactions.copy(),
+        chain=local_blockchain2.chain.copy(),
     )
 
     local_blockchain2.add_block(new_block)

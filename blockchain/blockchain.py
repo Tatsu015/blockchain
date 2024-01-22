@@ -141,32 +141,31 @@ class Blockchain:
             if transaction in self._outblock_transactions:
                 self._outblock_transactions.remove(transaction)
 
-    def mining(
-        self,
-        miner_public_key: str,
-        outblock_transactions: list[Transaction],
-        chain: list[Block],
-    ) -> Block:
-        if len(chain) < 1:
-            raise MiningError("empty chain not allowed")
 
-        copied_outblock_transactions = outblock_transactions.copy()
-        self.chain = chain
-        copied_inblock_transactions = integrate_inblock_transactions(chain).copy()
-        for t in copied_outblock_transactions:
-            copied_inblock_transactions.append(t)
-            if has_minus_amount(copied_inblock_transactions):
-                outblock_transactions.remove(t)
-                copied_inblock_transactions.remove(t)
+def mining(
+    miner_public_key: str,
+    outblock_transactions: list[Transaction],
+    chain: list[Block],
+) -> Block:
+    if len(chain) < 1:
+        raise MiningError("empty chain not allowed")
 
-        block = _find_new_block(
-            now=datetime.now(),
-            miner=miner_public_key,
-            outblock_transactions=outblock_transactions,
-            chain=chain,
-        )
+    copied_outblock_transactions = outblock_transactions.copy()
+    copied_inblock_transactions = integrate_inblock_transactions(chain).copy()
+    for t in copied_outblock_transactions:
+        copied_inblock_transactions.append(t)
+        if has_minus_amount(copied_inblock_transactions):
+            outblock_transactions.remove(t)
+            copied_inblock_transactions.remove(t)
 
-        return block
+    block = _find_new_block(
+        now=datetime.now(),
+        miner=miner_public_key,
+        outblock_transactions=outblock_transactions,
+        chain=chain,
+    )
+
+    return block
 
 
 def integrate_inblock_transactions(chain: list[Block]) -> list[Transaction]:

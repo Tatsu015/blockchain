@@ -7,7 +7,7 @@ from pydantic import TypeAdapter
 from pydantic.json import pydantic_encoder
 from blockchain.block import Block
 
-from blockchain.blockchain import Blockchain
+from blockchain.blockchain import Blockchain, mining
 
 from blockchain.transaction import Transaction
 
@@ -42,7 +42,7 @@ def load_transactions(ip_addr):
 chain = load_chain(ip_addr)
 transactions = load_transactions(ip_addr)
 blockchain = Blockchain(transactions, chain)
-new_block = blockchain.mining(miner_public_key, transactions, chain)
+new_block = mining(miner_public_key, transactions, chain)
 blockchain.add_block(new_block)
 data = json.dumps(blockchain.chain, default=pydantic_encoder)
 
