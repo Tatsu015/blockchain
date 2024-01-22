@@ -1,4 +1,3 @@
-from datetime import datetime
 from blockchain.block import Block
 from blockchain.blockchain import Blockchain
 from blockchain.transaction import Transaction

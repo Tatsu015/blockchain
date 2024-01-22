@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from blockchain.blockchain import FIRST_BLOCK, Blockchain, Block
+from blockchain.blockchain import Blockchain, Block
 from blockchain.chain_repository_impl import ChainRepositoryImpl
 
 from blockchain.transaction import Transaction
