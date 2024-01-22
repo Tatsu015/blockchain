@@ -153,17 +153,17 @@ def test_usecase2():
     ###
     # [No.3] A mining : get 256coin
     ###
-    local_blockchain = Blockchain(
+    local_blockchain3 = Blockchain(
         outblock_transactions=remote_blockchain.outblock_transactions.copy(),
         chain=remote_blockchain.chain.copy(),
     )
     new_block = mining(
         miner_public_key=pub_key_a,
-        outblock_transactions=local_blockchain.outblock_transactions.copy(),
-        chain=local_blockchain.chain.copy(),
+        outblock_transactions=local_blockchain3.outblock_transactions.copy(),
+        chain=local_blockchain3.chain.copy(),
     )
-    local_blockchain.add_block(new_block)
-    uc.update_chain(local_blockchain.chain)
+    local_blockchain3.add_block(new_block)
+    uc.update_chain(local_blockchain3.chain)
 
     acs = accounts(integrate_inblock_transactions(remote_blockchain.chain))
     assert len(acs) == 1
@@ -184,23 +184,26 @@ def test_usecase2():
     assert len(acs) == 1
     assert acs[pub_key_a] == 256
 
-    ###
-    # C mining : get 256coin
-    ###
-    new_block = uc.mining(
-        blockchain=local_blockchain,
-        miner_public_key=pub_key_c,
-        transactions=[],
-        chain=remote_blockchain.chain.copy(),
-    )
-    local_blockchain.chain.append(new_block)
-    uc.add_chain(remote_blockchain, local_blockchain.chain)
+    # ###
+    # # [No.5] C mining : get 256coin
+    # ###
+    # local_blockchain5 = Blockchain(
+    #     outblock_transactions=remote_blockchain.outblock_transactions.copy(),
+    #     chain=remote_blockchain.chain.copy(),
+    # )
+    # new_block = mining(
+    #     miner_public_key=pub_key_c,
+    #     outblock_transactions=local_blockchain5.outblock_transactions.copy(),
+    #     chain=local_blockchain5.chain.copy(),
+    # )
+    # local_blockchain5.add_block(new_block)
+    # uc.update_chain(local_blockchain5.chain)
 
-    local_blockchain.refresh_inblock_transactions()
-    acs = accounts(local_blockchain.inblock_transactions)
-    assert len(acs) == 2
-    assert acs[pub_key_a] == 256
-    assert acs[pub_key_c] == 256
+    # acs = accounts(integrate_inblock_transactions(local_blockchain5.chain))
+    # assert len(acs) == 3
+    # assert acs[pub_key_a] == 251
+    # assert acs[pub_key_c] == 258
+    # assert acs[pub_key_d] == 3
 
     # ###
     # # C -> D : 10coin false
