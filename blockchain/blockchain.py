@@ -164,13 +164,11 @@ class Blockchain:
                 outblock_transactions.remove(t)
                 copied_inblock_transactions.remove(t)
 
-        self._outblock_transactions = outblock_transactions
-
         block = _find_new_block(
             now=datetime.now(),
             miner=miner_public_key,
-            outblock_transactions=self.outblock_transactions,
-            chain=self.chain,
+            outblock_transactions=outblock_transactions,
+            chain=chain,
         )
 
         return block
