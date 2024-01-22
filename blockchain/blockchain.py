@@ -2,7 +2,7 @@ from datetime import datetime
 import json
 from pydantic import TypeAdapter
 from pydantic.json import pydantic_encoder
-from itertools import chain
+from itertools import chain as iter_chain
 
 from blockchain.block import MINING_SENDER_KEY, Block, UntimedBlock
 from blockchain.transaction import Transaction, new_transaction
@@ -101,11 +101,6 @@ class Blockchain:
     def add_block(self, block: Block):
         self._chain.append(block)
 
-    def integrate_inblock_transactions(self) -> list[Transaction]:
-        block_transactions = [b.transactions for b in self._chain]
-        all_transactions = list(chain.from_iterable(block_transactions))
-        return all_transactions
-
     def verify(self, chain: list[Block]):
         all_transactions = []
         for i, now_block in enumerate(chain):
@@ -141,7 +136,7 @@ class Blockchain:
 
     def replace(self, chain: list[Block]):
         self._chain = chain
-        self._inblock_transactions = self.integrate_inblock_transactions()
+        self._inblock_transactions = integrate_inblock_transactions(self.chain)
         for transaction in self._inblock_transactions:
             if transaction in self._outblock_transactions:
                 self._outblock_transactions.remove(transaction)
@@ -157,7 +152,7 @@ class Blockchain:
 
         copied_outblock_transactions = outblock_transactions.copy()
         self.chain = chain
-        copied_inblock_transactions = self.integrate_inblock_transactions().copy()
+        copied_inblock_transactions = integrate_inblock_transactions(chain).copy()
         for t in copied_outblock_transactions:
             copied_inblock_transactions.append(t)
             if has_minus_amount(copied_inblock_transactions):
@@ -172,6 +167,12 @@ class Blockchain:
         )
 
         return block
+
+
+def integrate_inblock_transactions(chain: list[Block]) -> list[Transaction]:
+    block_transactions = [b.transactions for b in chain]
+    all_transactions = list(iter_chain.from_iterable(block_transactions))
+    return all_transactions
 
 
 def _find_new_block(

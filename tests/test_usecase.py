@@ -1,5 +1,5 @@
 from datetime import datetime
-from blockchain.blockchain import Blockchain, accounts
+from blockchain.blockchain import Blockchain, accounts, integrate_inblock_transactions
 from blockchain.transaction import new_transaction
 from blockchain.usecase import Usecase
 
@@ -18,14 +18,13 @@ sec_key_d = "880f333800e295a892b7dc7a3a41f70430b8fdc8bc5832728f93ed636ea5cd5b"
 
 def test_usecase1():
     remote_blockchain = Blockchain(outblock_transactions=[], chain=[])
-    local_blockchain = Blockchain(outblock_transactions=[], chain=[])
 
     remote_uc = Usecase(remote_blockchain)
-    local_uc = Usecase(local_blockchain)
 
     ###
     # first mining
     ###
+    local_blockchain = Blockchain(outblock_transactions=[], chain=[])
     new_block = local_blockchain.mining(
         miner_public_key=pub_key_a,
         outblock_transactions=[],
@@ -102,7 +101,7 @@ def test_usecase1():
     assert chain[2].transactions[1].sender == "Blockchain"
     assert chain[2].transactions[1].receiver == pub_key_b
 
-    acs = accounts(local_blockchain.integrate_inblock_transactions())
+    acs = accounts(integrate_inblock_transactions(local_blockchain.chain))
     assert acs[pub_key_a] == 133
     assert acs[pub_key_b] == 379
 

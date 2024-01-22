@@ -8,9 +8,8 @@ from pydantic import TypeAdapter
 from pydantic.json import pydantic_encoder
 from blockchain.block import Block
 
-from blockchain.blockchain import Blockchain, accounts, has_minus_amount
+from blockchain.blockchain import Blockchain, accounts, integrate_inblock_transactions
 
-from blockchain.transaction import Transaction
 
 ip_addr = "127.0.0.1"
 
@@ -22,4 +21,4 @@ chain_jstr = res_chain.text
 chain = TypeAdapter(list[Block]).validate_json(chain_jstr)
 blockchain = Blockchain(outblock_transactions=[], chain=chain)
 
-print(accounts(blockchain.integrate_inblock_transactions()))
+print(accounts(integrate_inblock_transactions(blockchain.chain)))

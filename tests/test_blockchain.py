@@ -1,15 +1,16 @@
 from datetime import datetime
 import pytest
-from ecdsa import SECP256k1, BadSignatureError, VerifyingKey
-import binascii
-import json
 import os
 from datetime import datetime
 from blockchain.block import Block
 from blockchain.chain_repository_impl import ChainRepositoryImpl
 
 from blockchain.transaction import new_transaction
-from blockchain.blockchain import Blockchain, TransactionReuseError
+from blockchain.blockchain import (
+    Blockchain,
+    TransactionReuseError,
+    integrate_inblock_transactions,
+)
 from blockchain.transaction_repository_impl import TransactionRepositoryImpl
 
 
@@ -112,7 +113,7 @@ def test_get_inblock_transactions():
     blockChain.add_block(b1)
     blockChain.add_block(b2)
 
-    inblock_transactions = blockChain.integrate_inblock_transactions()
+    inblock_transactions = integrate_inblock_transactions(blockChain.chain)
 
     assert t1 == inblock_transactions[0]
     assert t2 == inblock_transactions[1]
