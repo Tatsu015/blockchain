@@ -23,6 +23,10 @@ class TransactionVerifyError(Exception):
     pass
 
 
+class MiningError(Exception):
+    pass
+
+
 class Blockchain:
     def __init__(
         self, outblock_transactions: list[Transaction], chain: list[Block]
@@ -142,8 +146,37 @@ class Blockchain:
             if transaction in self._outblock_transactions:
                 self._outblock_transactions.remove(transaction)
 
+    def mining(
+        self,
+        miner_public_key: str,
+        outblock_transactions: list[Transaction],
+        chain: list[Block],
+    ) -> Block:
+        if len(chain) < 1:
+            raise MiningError("empty chain not allowed")
 
-def find_new_block(
+        copied_outblock_transactions = outblock_transactions.copy()
+        self.chain = chain
+        copied_inblock_transactions = self.integrate_inblock_transactions().copy()
+        for t in copied_outblock_transactions:
+            copied_inblock_transactions.append(t)
+            if has_minus_amount(copied_inblock_transactions):
+                outblock_transactions.remove(t)
+                copied_inblock_transactions.remove(t)
+
+        self._outblock_transactions = outblock_transactions
+
+        block = _find_new_block(
+            now=datetime.now(),
+            miner=miner_public_key,
+            outblock_transactions=self.outblock_transactions,
+            chain=self.chain,
+        )
+
+        return block
+
+
+def _find_new_block(
     now: datetime,
     miner: str,
     outblock_transactions: list[Transaction],

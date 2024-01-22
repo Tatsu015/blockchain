@@ -26,7 +26,7 @@ def test_usecase1():
     ###
     # first mining
     ###
-    new_block = local_uc.mining(
+    new_block = local_blockchain.mining(
         miner_public_key=pub_key_a,
         outblock_transactions=[],
         chain=remote_blockchain.chain.copy(),  # use default chain
@@ -75,7 +75,7 @@ def test_usecase1():
     ###
     # 2nd mining
     ###
-    new_block = local_uc.mining(
+    new_block = local_blockchain.mining(
         miner_public_key=pub_key_b,
         outblock_transactions=remote_blockchain.outblock_transactions,
         chain=remote_blockchain.chain.copy(),

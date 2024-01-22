@@ -41,7 +41,7 @@ def get_transaction():
 
 @app.post("/transaction")
 def post_transaction(transaction: Transaction):
-    message = usecase.add_transaction(, transaction=transaction)
+    message = usecase.add_transaction(transaction=transaction)
     return {"message": message}
 
 
@@ -53,5 +53,5 @@ def get_chain():
 
 @app.post("/chain")
 def post_chain(chain: list[Block]):
-    message = usecase.add_chain(, chain=chain)
+    message = usecase.add_chain(chain=chain)
     return {"message": message}
