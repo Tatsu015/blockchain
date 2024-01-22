@@ -24,14 +24,14 @@ def test_usecase1():
     ###
     # first mining
     ###
-    local_blockchain = Blockchain(outblock_transactions=[], chain=[])
-    new_block = local_blockchain.mining(
+    local_blockchain1 = Blockchain(outblock_transactions=[], chain=[])
+    new_block = local_blockchain1.mining(
         miner_public_key=pub_key_a,
         outblock_transactions=remote_blockchain.outblock_transactions.copy(),
         chain=remote_blockchain.chain.copy(),
     )
-    local_blockchain.add_block(new_block)
-    remote_uc.add_chain(chain=local_blockchain.chain)
+    local_blockchain1.add_block(new_block)
+    remote_uc.add_chain(chain=local_blockchain1.chain)
 
     chain = remote_uc.get_chain()
     transactions = remote_uc.get_outblock_transaction()
@@ -74,15 +74,15 @@ def test_usecase1():
     ###
     # 2nd mining
     ###
-    local_blockchain = Blockchain(outblock_transactions=[], chain=[])
-    new_block = local_blockchain.mining(
+    local_blockchain2 = Blockchain(outblock_transactions=[], chain=[])
+    new_block = local_blockchain2.mining(
         miner_public_key=pub_key_b,
         outblock_transactions=remote_blockchain.outblock_transactions.copy(),
         chain=remote_blockchain.chain.copy(),
     )
 
-    local_blockchain.add_block(new_block)
-    remote_uc.add_chain(local_blockchain.chain)
+    local_blockchain2.add_block(new_block)
+    remote_uc.add_chain(local_blockchain2.chain)
 
     chain = remote_uc.get_chain()
     transactions = remote_uc.get_outblock_transaction()
@@ -102,7 +102,7 @@ def test_usecase1():
     assert chain[2].transactions[1].sender == "Blockchain"
     assert chain[2].transactions[1].receiver == pub_key_b
 
-    acs = accounts(integrate_inblock_transactions(local_blockchain.chain))
+    acs = accounts(integrate_inblock_transactions(local_blockchain2.chain))
     assert acs[pub_key_a] == 133
     assert acs[pub_key_b] == 379
 
