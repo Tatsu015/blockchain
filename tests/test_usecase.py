@@ -124,7 +124,7 @@ def test_usecase2():
     remote_uc = Usecase(remote_blockchain)
 
     ###
-    # A -> C : 5coin false
+    # [No.1] : A -> C : 5coin false
     ###
     remote_uc.add_transaction(
         new_transaction(
@@ -138,7 +138,7 @@ def test_usecase2():
     assert len(acs) == 0
 
     ###
-    # C -> D : 3coin false
+    # [No.2] : C -> D : 3coin false
     ###
     remote_uc.add_transaction(
         new_transaction(
@@ -152,25 +152,26 @@ def test_usecase2():
     assert len(acs) == 0
 
     ###
-    # A mining : get 256coin
+    # [No.3] A mining : get 256coin
     ###
-    # local_blockchain = Blockchain()
-    # new_block = uc.mining(
-    #     blockchain=local_blockchain,
-    #     miner_public_key=pub_key_a,
-    #     transactions=remote_blockchain.outblock_transactions.copy(),
-    #     chain=remote_blockchain.chain.copy(),
-    # )
-    # local_blockchain.chain.append(new_block)
-    # uc.add_chain(remote_blockchain, local_blockchain.chain)
+    local_blockchain = Blockchain(
+        outblock_transactions=remote_blockchain.outblock_transactions.copy(),
+        chain=remote_blockchain.chain.copy(),
+    )
+    new_block = mining(
+        miner_public_key=pub_key_a,
+        outblock_transactions=local_blockchain.outblock_transactions.copy(),
+        chain=local_blockchain.chain.copy(),
+    )
+    local_blockchain.add_block(new_block)
+    remote_uc.update_chain(local_blockchain.chain)
 
-    # local_blockchain.refresh_inblock_transactions()
-    # acs = accounts(local_blockchain.inblock_transactions)
-    # assert len(acs) == 1
-    # assert acs[pub_key_a] == 256
+    acs = accounts(integrate_inblock_transactions(remote_blockchain.chain))
+    assert len(acs) == 1
+    assert acs[pub_key_a] == 256
 
     # ###
-    # # C -> B : 10coin false
+    # # No.4 : C -> B : 10coin false
     # ###
     # uc.add_transaction(
     #     remote_blockchain,
