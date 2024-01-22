@@ -120,13 +120,12 @@ def test_usecase1():
 
 def test_usecase2():
     remote_blockchain = Blockchain(outblock_transactions=[], chain=[])
-
-    remote_uc = Usecase(remote_blockchain)
+    uc = Usecase(remote_blockchain)
 
     ###
     # [No.1] : A -> C : 5coin false
     ###
-    remote_uc.add_transaction(
+    uc.add_transaction(
         new_transaction(
             time=datetime.now(),
             from_secret_key=sec_key_a,
@@ -140,7 +139,7 @@ def test_usecase2():
     ###
     # [No.2] : C -> D : 3coin false
     ###
-    remote_uc.add_transaction(
+    uc.add_transaction(
         new_transaction(
             time=datetime.now(),
             from_secret_key=sec_key_a,
@@ -164,46 +163,44 @@ def test_usecase2():
         chain=local_blockchain.chain.copy(),
     )
     local_blockchain.add_block(new_block)
-    remote_uc.update_chain(local_blockchain.chain)
+    uc.update_chain(local_blockchain.chain)
 
     acs = accounts(integrate_inblock_transactions(remote_blockchain.chain))
     assert len(acs) == 1
     assert acs[pub_key_a] == 256
 
-    # ###
-    # # No.4 : C -> B : 10coin false
-    # ###
-    # uc.add_transaction(
-    #     remote_blockchain,
-    #     new_transaction(
-    #         time=datetime.now(),
-    #         from_secret_key=sec_key_c,
-    #         to_public_key=pub_key_b,
-    #         amount=10,
-    #     ),
-    # )
-    # local_blockchain.refresh_inblock_transactions()
-    # acs = accounts(local_blockchain.inblock_transactions)
-    # assert len(acs) == 1
-    # assert acs[pub_key_a] == 256
+    ###
+    # [No.4] C -> B : 10coin false
+    ###
+    uc.add_transaction(
+        new_transaction(
+            time=datetime.now(),
+            from_secret_key=sec_key_c,
+            to_public_key=pub_key_b,
+            amount=10,
+        ),
+    )
+    acs = accounts(remote_blockchain.inblock_transactions)
+    assert len(acs) == 1
+    assert acs[pub_key_a] == 256
 
-    # ###
-    # # C mining : get 256coin
-    # ###
-    # new_block = uc.mining(
-    #     blockchain=local_blockchain,
-    #     miner_public_key=pub_key_c,
-    #     transactions=[],
-    #     chain=remote_blockchain.chain.copy(),
-    # )
-    # local_blockchain.chain.append(new_block)
-    # uc.add_chain(remote_blockchain, local_blockchain.chain)
+    ###
+    # C mining : get 256coin
+    ###
+    new_block = uc.mining(
+        blockchain=local_blockchain,
+        miner_public_key=pub_key_c,
+        transactions=[],
+        chain=remote_blockchain.chain.copy(),
+    )
+    local_blockchain.chain.append(new_block)
+    uc.add_chain(remote_blockchain, local_blockchain.chain)
 
-    # local_blockchain.refresh_inblock_transactions()
-    # acs = accounts(local_blockchain.inblock_transactions)
-    # assert len(acs) == 2
-    # assert acs[pub_key_a] == 256
-    # assert acs[pub_key_c] == 256
+    local_blockchain.refresh_inblock_transactions()
+    acs = accounts(local_blockchain.inblock_transactions)
+    assert len(acs) == 2
+    assert acs[pub_key_a] == 256
+    assert acs[pub_key_c] == 256
 
     # ###
     # # C -> D : 10coin false
