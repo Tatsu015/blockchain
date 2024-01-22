@@ -53,5 +53,5 @@ def get_chain():
 
 @app.post("/chain")
 def post_chain(chain: list[Block]):
-    message = usecase.add_chain(chain=chain)
+    message = usecase.update_chain(chain=chain)
     return {"message": message}

@@ -25,7 +25,7 @@ class Usecase:
     def get_chain(self) -> list[Block]:
         return self._blockchain.chain
 
-    def add_chain(self, chain: list[Block]) -> str:
+    def update_chain(self, chain: list[Block]) -> str:
         if len(chain) <= len(self._blockchain.chain):
             return "Received chain is ignored"
         try:

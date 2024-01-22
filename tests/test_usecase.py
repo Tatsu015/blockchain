@@ -31,7 +31,7 @@ def test_usecase1():
         chain=remote_blockchain.chain.copy(),
     )
     local_blockchain1.add_block(new_block)
-    remote_uc.add_chain(chain=local_blockchain1.chain)
+    remote_uc.update_chain(chain=local_blockchain1.chain)
 
     chain = remote_uc.get_chain()
     transactions = remote_uc.get_outblock_transaction()
@@ -82,7 +82,7 @@ def test_usecase1():
     )
 
     local_blockchain2.add_block(new_block)
-    remote_uc.add_chain(local_blockchain2.chain)
+    remote_uc.update_chain(local_blockchain2.chain)
 
     chain = remote_uc.get_chain()
     transactions = remote_uc.get_outblock_transaction()
