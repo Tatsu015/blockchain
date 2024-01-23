@@ -1,7 +1,6 @@
 import argparse
 import requests
 from datetime import datetime
-
 from blockchain.domain.transaction import new_transaction
 from fastapi.encoders import jsonable_encoder
 
@@ -20,4 +19,4 @@ t = new_transaction(datetime.now(), from_secret_key, to_public_key, args.amount)
 
 data = jsonable_encoder(t)
 print("post data:", data)
-res = requests.post(f"http://{args.ip}:{args.port}/transaction", json=data)
+res = requests.post(f"http://{args.ip}:{str(args.port)}/transaction", json=data)

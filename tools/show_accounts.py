@@ -1,11 +1,7 @@
+import argparse
 import requests
 import sys
-
-import json
-from datetime import datetime
-
 from pydantic import TypeAdapter
-from pydantic.json import pydantic_encoder
 from blockchain.domain.block import Block
 
 from blockchain.domain.blockchain import (
@@ -14,10 +10,13 @@ from blockchain.domain.blockchain import (
     integrate_inblock_transactions,
 )
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--ip", type=str, default="127.0.0.1")
+parser.add_argument("--port", type=int, default=8080)
+args = parser.parse_args()
 
-ip_addr = "127.0.0.1"
 
-res_chain = requests.get("http://" + ip_addr + ":8080/chain")
+res_chain = requests.get(f"http://{args.ip}:{str(args.port)}/chain")
 if res_chain.status_code != 200:
     print(f"request error: {res_chain.status}")
     sys.exit()
