@@ -40,7 +40,7 @@ class Usecase:
             self._blockchain.verify(chain)
             self._blockchain.replace(chain)
             self._chain_repository.save_chain("chain.json")
-            self._blockchain.save_transactions("transactions.json")
+            self._transaction_repository.save_transactions("transactions.json")
             return "chain is posted"
 
         except Exception as e:
