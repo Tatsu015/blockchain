@@ -12,7 +12,7 @@ test:
 
 PHONY:post
 post:
-	poetry run python post.py
+	poetry run python tools/post.py
 
 PHONY:transaction
 transaction:
@@ -24,8 +24,8 @@ mining:
 
 PHONY:show_accounts
 show_accounts:
-	poetry run python show_accounts.py
+	poetry run python tools/show_accounts.py
 
 PHONY:keygen
 keygen:
-	poetry run python keygen.py
+	poetry run python tools/keygen.py
