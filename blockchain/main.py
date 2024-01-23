@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -9,14 +10,18 @@ from blockchain.infrastructure.transaction_repository_impl import (
     TransactionRepositoryImpl,
 )
 from blockchain.usecase.usecase import Usecase
+from blockchain.settings import settings
 
+print("settings:", settings)
+cached_dir = ".cache/" + settings.repository_dir
+os.makedirs(cached_dir)
 
 app = FastAPI()
 
-transaction_repo = TransactionRepositoryImpl("transactions.json")
+transaction_repo = TransactionRepositoryImpl(f"{cached_dir}/transactions.json")
 transactions = transaction_repo.load_transactios()
 
-chain_repo = ChainRepositoryImpl("chain.json")
+chain_repo = ChainRepositoryImpl(f"{cached_dir}/chain.json")
 chain = chain_repo.load_chain()
 
 blockchain = Blockchain(outblock_transactions=transactions, chain=chain)
