@@ -4,7 +4,7 @@ dev:
 
 PHONY:clean
 clean:
-	rm chain.json transactions.json
+	rm -rf .cache
 
 PHONY:test
 test:
