@@ -20,7 +20,7 @@ transaction:
 
 PHONY:mining
 mining:
-	poetry run python mining.py
+	poetry run python tools/mining.py
 
 PHONY:show_accounts
 show_accounts:
