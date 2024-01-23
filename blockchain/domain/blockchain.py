@@ -58,24 +58,6 @@ class Blockchain:
     def chain(self, value):
         self._chain = value
 
-    def load_transactios(self, path):
-        try:
-            with open(path, "r", encoding="utf-8") as file:
-                json_data = json.load(file)
-                self._outblock_transactions = TypeAdapter(
-                    list[Transaction]
-                ).validate_json(json_data)
-
-        except FileNotFoundError as e:
-            print(e)
-
-    def save_transactions(self, path):
-        with open(path, "w", encoding="utf-8") as file:
-            json_data = json.dumps(
-                self._outblock_transactions, default=pydantic_encoder
-            )
-            json.dump(json_data, file, default=str)
-
     def add_transaction(self, transaction: Transaction):
         if (transaction not in self._outblock_transactions) and (
             transaction not in self._inblock_transactions
@@ -83,20 +65,6 @@ class Blockchain:
             self._outblock_transactions.append(transaction)
         else:
             raise TransactionReuseError("transaction already appended")
-
-    def load_chain(self, path):
-        try:
-            with open(path, "r", encoding="utf-8") as file:
-                json_data = json.load(file)
-                self._chain = TypeAdapter(list[Block]).validate_json(json_data)
-
-        except FileNotFoundError as e:
-            print(e)
-
-    def save_chain(self, path):
-        with open(path, "w", encoding="utf-8") as file:
-            json_data = json.dumps(self._chain, default=pydantic_encoder)
-            json.dump(json_data, file, default=str)
 
     def add_block(self, block: Block):
         self._chain.append(block)

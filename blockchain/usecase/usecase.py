@@ -1,11 +1,20 @@
 from blockchain.domain.block import Block
 from blockchain.domain.blockchain import Blockchain
+from blockchain.domain.chain_repository import ChainRepository
 from blockchain.domain.transaction import Transaction
+from blockchain.domain.transaction_repository import TransactionRepository
 
 
 class Usecase:
-    def __init__(self, blockchain: Blockchain) -> None:
+    def __init__(
+        self,
+        blockchain: Blockchain,
+        transaction_repository: TransactionRepository,
+        chain_repository: ChainRepository,
+    ) -> None:
         self._blockchain = blockchain
+        self._transaction_repository = transaction_repository
+        self._chain_repository = chain_repository
         pass
 
     def get_outblock_transaction(self) -> list[Transaction]:
@@ -18,7 +27,7 @@ class Usecase:
             return e.value
 
         self._blockchain.add_transaction(transaction)
-        self._blockchain.save_transactions("transactions.json")
+        self._transaction_repository.save_transactions("transactions.json")
         return "Transaction is posted"
 
     def get_chain(self) -> list[Block]:
@@ -30,7 +39,7 @@ class Usecase:
         try:
             self._blockchain.verify(chain)
             self._blockchain.replace(chain)
-            self._blockchain.save_chain("chain.json")
+            self._chain_repository.save_chain("chain.json")
             self._blockchain.save_transactions("transactions.json")
             return "chain is posted"
 

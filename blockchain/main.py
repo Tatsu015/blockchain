@@ -26,7 +26,7 @@ chain = chain_repo.load_chain()
 
 blockchain = Blockchain(outblock_transactions=transactions, chain=chain)
 
-usecase = Usecase(blockchain)
+usecase = Usecase(blockchain, transaction_repo, chain_repo)
 
 
 @app.exception_handler(RequestValidationError)

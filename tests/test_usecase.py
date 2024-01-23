@@ -1,11 +1,14 @@
 from datetime import datetime
+from blockchain.domain.block import Block
 from blockchain.domain.blockchain import (
     Blockchain,
     accounts,
     integrate_inblock_transactions,
     mining,
 )
-from blockchain.domain.transaction import new_transaction
+from blockchain.domain.chain_repository import ChainRepository
+from blockchain.domain.transaction import Transaction, new_transaction
+from blockchain.domain.transaction_repository import TransactionRepository
 from blockchain.usecase.usecase import Usecase
 
 pub_key_a = "e3a81cfec35827aad5890f96aa19d441c92c5d5a9ba90486be68a0121201957690c23b4788452be49e313e6ed920e59b4d6165d71b82b2d860e5e9a3e25e2c5f"
@@ -21,10 +24,34 @@ pub_key_d = "3519798ce1d1cbece8f80183ab3383d3893353338a0e359b513c4aa6ce134f32284
 sec_key_d = "880f333800e295a892b7dc7a3a41f70430b8fdc8bc5832728f93ed636ea5cd5b"
 
 
+class TransactionRepositoryDummy(TransactionRepository):
+    def __init__(self) -> None:
+        pass
+
+    def load_transactios(self):
+        return []
+
+    def save_transactions(self, _: list[Transaction]):
+        pass
+
+
+class ChainRepositoryDummy(ChainRepository):
+    def __init__(self) -> None:
+        pass
+
+    def load_chain(self):
+        return []
+
+    def save_chain(self, _: list[Block]):
+        pass
+
+
 def test_usecase1():
     remote_blockchain = Blockchain(outblock_transactions=[], chain=[])
 
-    remote_uc = Usecase(remote_blockchain)
+    uc = Usecase(
+        remote_blockchain, TransactionRepositoryDummy(), ChainRepositoryDummy()
+    )
 
     ###
     # first mining
@@ -39,10 +66,10 @@ def test_usecase1():
         chain=local_blockchain1.chain.copy(),
     )
     local_blockchain1.add_block(new_block)
-    remote_uc.update_chain(local_blockchain1.chain)
+    uc.update_chain(local_blockchain1.chain)
 
-    chain = remote_uc.get_chain()
-    transactions = remote_uc.get_outblock_transaction()
+    chain = uc.get_chain()
+    transactions = uc.get_outblock_transaction()
 
     # initial chain and first create chain exist
     assert transactions == []
@@ -56,7 +83,7 @@ def test_usecase1():
     ###
     # 1st transaction create
     ###
-    remote_uc.add_transaction(
+    uc.add_transaction(
         new_transaction(
             time=datetime.now(),
             from_secret_key=sec_key_a,
@@ -65,8 +92,8 @@ def test_usecase1():
         ),
     )
 
-    chain = remote_uc.get_chain()
-    transactions = remote_uc.get_outblock_transaction()
+    chain = uc.get_chain()
+    transactions = uc.get_outblock_transaction()
 
     assert len(transactions) == 1
     assert transactions[0].amount == 123
@@ -93,10 +120,10 @@ def test_usecase1():
     )
 
     local_blockchain2.add_block(new_block)
-    remote_uc.update_chain(local_blockchain2.chain)
+    uc.update_chain(local_blockchain2.chain)
 
-    chain = remote_uc.get_chain()
-    transactions = remote_uc.get_outblock_transaction()
+    chain = uc.get_chain()
+    transactions = uc.get_outblock_transaction()
 
     assert len(transactions) == 0
     assert len(chain) == 3
@@ -120,7 +147,9 @@ def test_usecase1():
 
 def test_usecase2():
     remote_blockchain = Blockchain(outblock_transactions=[], chain=[])
-    uc = Usecase(remote_blockchain)
+    uc = Usecase(
+        remote_blockchain, TransactionRepositoryDummy(), ChainRepositoryDummy()
+    )
 
     ###
     # [No.1] : A -> C : 5coin false
