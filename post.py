@@ -1,7 +1,7 @@
 import requests
 from datetime import datetime
 
-from blockchain.transaction import new_transaction
+from blockchain.domain.transaction import new_transaction
 from fastapi.encoders import jsonable_encoder
 
 from_secret_key = "3492bbbca3e5efe5e1758058d8bbf2101dcaf2a50f8562b79861fc2f194347ca"

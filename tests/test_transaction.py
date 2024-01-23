@@ -5,7 +5,7 @@ import binascii
 import json
 from datetime import datetime
 
-from blockchain.transaction import (
+from blockchain.domain.transaction import (
     NonPositiveAmountTransactionError,
     Transaction,
     new_transaction,

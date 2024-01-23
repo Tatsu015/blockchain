@@ -1,27 +1,26 @@
 import json
 from pydantic.json import pydantic_encoder
 from pydantic import TypeAdapter
-from blockchain.transaction import Transaction
-from blockchain.transaction_repository import TransactionRepository
+from blockchain.domain.block import Block
+from blockchain.domain.chain_repository import ChainRepository
 
 
-class TransactionRepositoryImpl(TransactionRepository):
+class ChainRepositoryImpl(ChainRepository):
     def __init__(self, path: str) -> None:
         self._path = path
 
-    def load_transactios(self):
+    def load_chain(self):
         try:
             with open(self._path, "r", encoding="utf-8") as file:
                 json_data = json.load(file)
-                transactions = TypeAdapter(list[Transaction]).validate_json(json_data)
-
-                return transactions
+                chain = TypeAdapter(list[Block]).validate_json(json_data)
+                return chain
 
         except FileNotFoundError as e:
             print(e)
             return []
 
-    def save_transactions(self, transactions: list[Transaction]):
+    def save_chain(self, chain: list[Block]):
         with open(self._path, "w", encoding="utf-8") as file:
-            json_data = json.dumps(transactions, default=pydantic_encoder)
+            json_data = json.dumps(chain, default=pydantic_encoder)
             json.dump(json_data, file, default=str)

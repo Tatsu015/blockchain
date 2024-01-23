@@ -6,9 +6,13 @@ from datetime import datetime
 
 from pydantic import TypeAdapter
 from pydantic.json import pydantic_encoder
-from blockchain.block import Block
+from blockchain.domain.block import Block
 
-from blockchain.blockchain import Blockchain, accounts, integrate_inblock_transactions
+from blockchain.domain.blockchain import (
+    Blockchain,
+    accounts,
+    integrate_inblock_transactions,
+)
 
 
 ip_addr = "127.0.0.1"

@@ -4,8 +4,8 @@ from pydantic import TypeAdapter
 from pydantic.json import pydantic_encoder
 from itertools import chain as iter_chain
 
-from blockchain.block import MINING_SENDER_KEY, Block, UntimedBlock
-from blockchain.transaction import Transaction, new_transaction
+from blockchain.domain.block import MINING_SENDER_KEY, Block, UntimedBlock
+from blockchain.domain.transaction import Transaction, new_transaction
 
 
 POW_DIFFICULTY = 10

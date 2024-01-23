@@ -1,12 +1,12 @@
 from datetime import datetime
-from blockchain.blockchain import (
+from blockchain.domain.blockchain import (
     Blockchain,
     accounts,
     integrate_inblock_transactions,
     mining,
 )
-from blockchain.transaction import new_transaction
-from blockchain.usecase import Usecase
+from blockchain.domain.transaction import new_transaction
+from blockchain.usecase.usecase import Usecase
 
 pub_key_a = "e3a81cfec35827aad5890f96aa19d441c92c5d5a9ba90486be68a0121201957690c23b4788452be49e313e6ed920e59b4d6165d71b82b2d860e5e9a3e25e2c5f"
 sec_key_a = "3492bbbca3e5efe5e1758058d8bbf2101dcaf2a50f8562b79861fc2f194347ca"

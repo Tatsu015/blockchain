@@ -2,16 +2,18 @@ from datetime import datetime
 import pytest
 import os
 from datetime import datetime
-from blockchain.block import Block
-from blockchain.chain_repository_impl import ChainRepositoryImpl
+from blockchain.domain.block import Block
+from blockchain.infrastructure.chain_repository_impl import ChainRepositoryImpl
 
-from blockchain.transaction import new_transaction
-from blockchain.blockchain import (
+from blockchain.domain.transaction import new_transaction
+from blockchain.domain.blockchain import (
     Blockchain,
     TransactionReuseError,
     integrate_inblock_transactions,
 )
-from blockchain.transaction_repository_impl import TransactionRepositoryImpl
+from blockchain.infrastructure.transaction_repository_impl import (
+    TransactionRepositoryImpl,
+)
 
 
 FROM_SELECT_KEY = "9a77f929737b0b2e90090afc57685d734735052deab172aa5228aa65ee0fcbd2"

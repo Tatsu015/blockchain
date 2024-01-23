@@ -5,11 +5,11 @@ import json
 
 from pydantic import TypeAdapter
 from pydantic.json import pydantic_encoder
-from blockchain.block import Block
+from blockchain.domain.block import Block
 
-from blockchain.blockchain import Blockchain, mining
+from blockchain.domain.blockchain import Blockchain, mining
 
-from blockchain.transaction import Transaction
+from blockchain.domain.transaction import Transaction
 
 
 miner_public_key = "e3a81cfec35827aad5890f96aa19d441c92c5d5a9ba90486be68a0121201957690c23b4788452be49e313e6ed920e59b4d6165d71b82b2d860e5e9a3e25e2c5f"

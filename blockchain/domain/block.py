@@ -1,7 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel
 import hashlib
-from blockchain.transaction import Transaction
+from blockchain.domain.transaction import Transaction
 
 MINING_SENDER_KEY = "Blockchain"
 

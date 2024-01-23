@@ -1,6 +1,6 @@
-from blockchain.block import Block
-from blockchain.blockchain import Blockchain
-from blockchain.transaction import Transaction
+from blockchain.domain.block import Block
+from blockchain.domain.blockchain import Blockchain
+from blockchain.domain.transaction import Transaction
 
 
 class Usecase:
