@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    cache_dir: str = "aaa"
+    port: int = 8080
 
 
 settings = Settings()

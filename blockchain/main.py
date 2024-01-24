@@ -13,8 +13,8 @@ from blockchain.usecase.usecase import Usecase
 from blockchain.settings import settings
 
 print("settings:", settings)
-cached_dir = ".cache/" + settings.cache_dir
-if not os.path.exists(dir):
+cached_dir = ".cache/" + str(settings.port)
+if not os.path.exists(cached_dir):
     os.makedirs(cached_dir)
 
 app = FastAPI()

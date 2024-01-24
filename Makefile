@@ -1,6 +1,6 @@
 PHONY:dev
 dev:
-	poetry run uvicorn blockchain.main:app --reload --port 8080
+	export PORT=8081 && poetry run uvicorn blockchain.main:app --reload --port $$PORT
 
 PHONY:clean
 clean:
