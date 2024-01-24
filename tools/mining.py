@@ -5,7 +5,7 @@ import json
 from pydantic import TypeAdapter
 from pydantic.json import pydantic_encoder
 from blockchain.domain.block import Block
-from blockchain.domain.blockchain import Blockchain, mining
+from blockchain.domain.blockchain import Blockchain, mining, verify
 from blockchain.domain.transaction import Transaction
 
 
@@ -43,6 +43,12 @@ args = parser.parse_args()
 chain = load_chain(args.ip, args.port)
 transactions = load_transactions(args.ip, args.port)
 blockchain = Blockchain(transactions, chain)
+
+try:
+    verify(chain)
+except:
+    sys.exit()
+
 new_block = mining(miner_public_key, transactions, chain)
 blockchain.add_block(new_block)
 data = json.dumps(blockchain.chain, default=pydantic_encoder)
