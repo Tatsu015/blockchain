@@ -2,6 +2,22 @@ PHONY:dev
 dev:
 	export PORT=8081 && poetry run uvicorn blockchain.main:app --reload --port $$PORT
 
+PHONY:dev_multi
+dev_multi:
+	(export PORT=8081 && poetry run uvicorn blockchain.main:app --reload --port $$PORT) & (export PORT=8082 && poetry run uvicorn blockchain.main:app --reload --port $$PORT) & (export PORT=8083 && poetry run uvicorn blockchain.main:app --reload --port $$PORT)
+
+PHONY:dev_8001
+dev_8001:
+	export PORT=8081 && poetry run uvicorn blockchain.main:app --reload --port $$PORT
+
+PHONY:dev_8002
+dev_8002:
+	export PORT=8082 && poetry run uvicorn blockchain.main:app --reload --port $$PORT
+
+PHONY:dev_8003
+dev_8003:
+	export PORT=8083 && poetry run uvicorn blockchain.main:app --reload --port $$PORT
+
 PHONY:clean
 clean:
 	rm -rf .cache
