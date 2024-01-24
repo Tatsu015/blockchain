@@ -1,5 +1,5 @@
 from blockchain.domain.block import Block
-from blockchain.domain.blockchain import Blockchain
+from blockchain.domain.blockchain import Blockchain, verify
 from blockchain.domain.chain_repository import ChainRepository
 from blockchain.domain.transaction import Transaction
 from blockchain.domain.transaction_repository import TransactionRepository
@@ -37,7 +37,7 @@ class Usecase:
         if len(chain) <= len(self._blockchain.chain):
             return "Received chain is ignored"
         try:
-            self._blockchain.verify(chain)
+            verify(chain)
             self._blockchain.replace(chain)
             self._chain_repository.save_chain("chain.json")
             self._transaction_repository.save_transactions("transactions.json")

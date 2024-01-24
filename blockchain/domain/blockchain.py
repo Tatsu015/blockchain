@@ -69,45 +69,46 @@ class Blockchain:
     def add_block(self, block: Block):
         self._chain.append(block)
 
-    def verify(self, chain: list[Block]):
-        all_transactions = []
-        for i, now_block in enumerate(chain):
-            if i == 0:
-                if now_block != FIRST_BLOCK:
-                    raise TransactionVerifyError("first block maybe falsificated")
-            else:
-                prev_block = chain[i - 1]
-                if now_block.hash_value != prev_block.hash():
-                    raise TransactionVerifyError("chain hash maybe falsificated")
-
-                untime_now_block = now_block.to_untimed()
-                if untime_now_block.is_wrong_hash(POW_DIFFICULTY):
-                    raise TransactionVerifyError(
-                        "chain not satisfy mining success condition"
-                    )
-
-                if now_block.has_many_rewards():
-                    raise TransactionVerifyError("chain already contain reward")
-
-                if now_block.has_bad_reward(REWARD_AMOUNT):
-                    raise TransactionVerifyError("reward amount not correct")
-
-                if now_block.contain(all_transactions):
-                    raise TransactionVerifyError("duplicate transaction")
-
-                now_block.verify()
-
-                all_transactions.extend(now_block.transactions)
-
-        if has_minus_amount(transactions=all_transactions):
-            raise TransactionVerifyError("minus amount exist")
-
     def replace(self, chain: list[Block]):
         self._chain = chain
         self._inblock_transactions = integrate_inblock_transactions(self.chain)
         for transaction in self._inblock_transactions:
             if transaction in self._outblock_transactions:
                 self._outblock_transactions.remove(transaction)
+
+
+def verify(chain: list[Block]):
+    all_transactions = []
+    for i, now_block in enumerate(chain):
+        if i == 0:
+            if now_block != FIRST_BLOCK:
+                raise TransactionVerifyError("first block maybe falsificated")
+        else:
+            prev_block = chain[i - 1]
+            if now_block.hash_value != prev_block.hash():
+                raise TransactionVerifyError("chain hash maybe falsificated")
+
+            untime_now_block = now_block.to_untimed()
+            if untime_now_block.is_wrong_hash(POW_DIFFICULTY):
+                raise TransactionVerifyError(
+                    "chain not satisfy mining success condition"
+                )
+
+            if now_block.has_many_rewards():
+                raise TransactionVerifyError("chain already contain reward")
+
+            if now_block.has_bad_reward(REWARD_AMOUNT):
+                raise TransactionVerifyError("reward amount not correct")
+
+            if now_block.contain(all_transactions):
+                raise TransactionVerifyError("duplicate transaction")
+
+            now_block.verify()
+
+            all_transactions.extend(now_block.transactions)
+
+    if has_minus_amount(transactions=all_transactions):
+        raise TransactionVerifyError("minus amount exist")
 
 
 def mining(
