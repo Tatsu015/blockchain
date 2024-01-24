@@ -14,7 +14,8 @@ from blockchain.settings import settings
 
 print("settings:", settings)
 cached_dir = ".cache/" + settings.cache_dir
-os.makedirs(cached_dir)
+if not os.path.exists(dir):
+    os.makedirs(cached_dir)
 
 app = FastAPI()
 
