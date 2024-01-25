@@ -66,7 +66,8 @@ blockchain = Blockchain(outblock_transactions, chain)
 
 try:
     verify(chain)
-except:
+except Exception as e:
+    print(e)
     sys.exit()
 
 inblock_transactions = integrate_inblock_transactions(chain).copy()
