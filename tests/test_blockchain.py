@@ -7,9 +7,12 @@ from blockchain.infrastructure.chain_repository_impl import ChainRepositoryImpl
 
 from blockchain.domain.transaction import new_transaction
 from blockchain.domain.blockchain import (
+    REWARD_AMOUNT,
     Blockchain,
+    MiningError,
     TransactionReuseError,
     integrate_inblock_transactions,
+    mining,
 )
 from blockchain.infrastructure.transaction_repository_impl import (
     TransactionRepositoryImpl,
@@ -120,3 +123,16 @@ def test_get_inblock_transactions():
     assert t1 == inblock_transactions[0]
     assert t2 == inblock_transactions[1]
     assert t3 == inblock_transactions[2]
+
+
+# def test_mining():
+#     blockchain = Blockchain(outblock_transactions=[], chain=[])
+#     new_block1 = mining(
+#         TO_PUBLIC_KEY, blockchain.outblock_transactions, blockchain.chain, REWARD_AMOUNT
+#     )
+#     blockchain.add_block(new_block1)
+
+#     with pytest.raises(MiningError) as e:
+#         mining(TO_PUBLIC_KEY, blockchain.outblock_transactions, blockchain.chain, 500)
+
+#     assert str(e.value) == "empty chain not allowed"
