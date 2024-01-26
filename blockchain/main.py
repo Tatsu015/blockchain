@@ -6,6 +6,7 @@ from blockchain.domain.blockchain import Blockchain, Block
 from blockchain.infrastructure.chain_repository_impl import ChainRepositoryImpl
 
 from blockchain.domain.transaction import Transaction
+from blockchain.infrastructure.syncer_impl import SyncerImpl
 from blockchain.infrastructure.transaction_repository_impl import (
     TransactionRepositoryImpl,
 )
@@ -25,9 +26,11 @@ transactions = transaction_repo.load_transactios()
 chain_repo = ChainRepositoryImpl(f"{cached_dir}/chain.json")
 chain = chain_repo.load_chain()
 
+syncer = SyncerImpl()
+
 blockchain = Blockchain(outblock_transactions=transactions, chain=chain)
 
-usecase = Usecase(blockchain, transaction_repo, chain_repo)
+usecase = Usecase(blockchain, transaction_repo, chain_repo, syncer)
 
 
 @app.exception_handler(RequestValidationError)
@@ -50,6 +53,12 @@ def get_transaction():
 @app.post("/transaction")
 def post_transaction(transaction: Transaction):
     message = usecase.add_transaction(transaction=transaction)
+    return {"message": message}
+
+
+@app.post("/transaction/bloadcast")
+def post_bloadcast_transaction(transaction: Transaction):
+    message = usecase.add_transaction_without_bloadcast(transaction=transaction)
     return {"message": message}
 
 

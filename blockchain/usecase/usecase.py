@@ -3,6 +3,7 @@ from blockchain.domain.blockchain import Blockchain, verify
 from blockchain.domain.chain_repository import ChainRepository
 from blockchain.domain.transaction import Transaction
 from blockchain.domain.transaction_repository import TransactionRepository
+from blockchain.infrastructure.syncer_impl import SyncerImpl
 
 
 class Usecase:
@@ -11,10 +12,12 @@ class Usecase:
         blockchain: Blockchain,
         transaction_repository: TransactionRepository,
         chain_repository: ChainRepository,
+        syncer: SyncerImpl,
     ) -> None:
         self._blockchain = blockchain
         self._transaction_repository = transaction_repository
         self._chain_repository = chain_repository
+        self._syncer = syncer
         pass
 
     def get_outblock_transaction(self) -> list[Transaction]:
@@ -28,7 +31,18 @@ class Usecase:
 
         self._blockchain.add_transaction(transaction)
         self._transaction_repository.save_transactions("transactions.json")
+        self._syncer.bloadcast(transaction)
         return "Transaction is posted"
+
+    def add_transaction_without_bloadcast(self, transaction: Transaction) -> str:
+        try:
+            transaction.verify()
+        except Exception as e:
+            return e.value
+
+        self._blockchain.add_transaction(transaction)
+        self._transaction_repository.save_transactions("transactions.json")
+        return "Transaction is received"
 
     def get_chain(self) -> list[Block]:
         return self._blockchain.chain
