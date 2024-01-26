@@ -1,11 +1,8 @@
 from datetime import datetime
-import json
-from pydantic import TypeAdapter
-from pydantic.json import pydantic_encoder
 from itertools import chain as iter_chain
 
 from blockchain.domain.block import MINING_SENDER_KEY, Block, UntimedBlock
-from blockchain.domain.transaction import Transaction, new_transaction
+from blockchain.domain.transaction import Transaction
 
 
 POW_DIFFICULTY = 10
@@ -119,7 +116,14 @@ def mining(
     if len(chain) < 1:
         raise MiningError("empty chain not allowed")
 
-    copied_outblock_transactions = outblock_transactions.copy()
+    verify(chain)
+
+    inblock_transactions = integrate_inblock_transactions(chain).copy()
+    unique_transactions = _remove_reuse_transactions(
+        outblock_transactions, inblock_transactions
+    )
+
+    copied_outblock_transactions = unique_transactions.copy()
     copied_inblock_transactions = integrate_inblock_transactions(chain).copy()
     for t in copied_outblock_transactions:
         copied_inblock_transactions.append(t)
@@ -135,6 +139,21 @@ def mining(
     )
 
     return block
+
+
+def _remove_reuse_transactions(
+    outblock_transactions: list[Transaction],
+    copied_inblock_transactions: list[Transaction],
+) -> list[Transaction]:
+    copied_outblock_transactions = outblock_transactions.copy()
+    for t in copied_outblock_transactions:
+        if t not in copied_inblock_transactions:
+            t.verify()
+            copied_inblock_transactions.append(t)
+        else:
+            outblock_transactions.remove(t)
+
+    return outblock_transactions.copy()
 
 
 def integrate_inblock_transactions(chain: list[Block]) -> list[Transaction]:

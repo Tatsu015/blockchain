@@ -40,21 +40,6 @@ def fetch_outblock_transactions(ip_addr: str, port: int):
     return transactions
 
 
-def remove_reuse_transactions(
-    outblock_transactions: list[Transaction],
-    copied_inblock_transactions: list[Transaction],
-) -> list[Transaction]:
-    copied_outblock_transactions = outblock_transactions.copy()
-    for t in copied_outblock_transactions:
-        if t not in copied_inblock_transactions:
-            t.verify()
-            copied_inblock_transactions.append(t)
-        else:
-            outblock_transactions.remove(t)
-
-    return outblock_transactions.copy()
-
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--ip", type=str, default="127.0.0.1")
 parser.add_argument("--port", type=int, default=8080)
@@ -64,18 +49,7 @@ chain = fetch_chain(args.ip, args.port)
 outblock_transactions = fetch_outblock_transactions(args.ip, args.port)
 blockchain = Blockchain(outblock_transactions, chain)
 
-try:
-    verify(chain)
-except Exception as e:
-    print(e)
-    sys.exit()
-
-inblock_transactions = integrate_inblock_transactions(chain).copy()
-unique_transactions = remove_reuse_transactions(
-    outblock_transactions, inblock_transactions
-)
-
-new_block = mining(miner_public_key, unique_transactions, chain)
+new_block = mining(miner_public_key, outblock_transactions, chain)
 blockchain.add_block(new_block)
 data = json.dumps(blockchain.chain, default=pydantic_encoder)
 
