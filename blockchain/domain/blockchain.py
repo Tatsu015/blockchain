@@ -112,6 +112,7 @@ def mining(
     miner_public_key: str,
     outblock_transactions: list[Transaction],
     chain: list[Block],
+    reward_amount: int,
 ) -> Block:
     if len(chain) < 1:
         raise MiningError("empty chain not allowed")
@@ -136,6 +137,7 @@ def mining(
         miner=miner_public_key,
         outblock_transactions=outblock_transactions,
         chain=chain,
+        reward_amount=reward_amount,
     )
 
     return block
@@ -167,12 +169,13 @@ def _find_new_block(
     miner: str,
     outblock_transactions: list[Transaction],
     chain: list[Block],
+    reward_amount: int,
 ) -> Block:
     reward_transaction = Transaction(
         time=now,
         sender=MINING_SENDER_KEY,
         receiver=miner,
-        amount=REWARD_AMOUNT,
+        amount=reward_amount,
         signature="none",
     )
     transactions = outblock_transactions.copy()

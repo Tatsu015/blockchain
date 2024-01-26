@@ -1,6 +1,7 @@
 from datetime import datetime
 from blockchain.domain.block import Block
 from blockchain.domain.blockchain import (
+    REWARD_AMOUNT,
     Blockchain,
     accounts,
     integrate_inblock_transactions,
@@ -64,6 +65,7 @@ def test_usecase1():
         miner_public_key=pub_key_a,
         outblock_transactions=local_blockchain1.outblock_transactions.copy(),
         chain=local_blockchain1.chain.copy(),
+        reward_amount=REWARD_AMOUNT,
     )
     local_blockchain1.add_block(new_block)
     uc.update_chain(local_blockchain1.chain)
@@ -117,6 +119,7 @@ def test_usecase1():
         miner_public_key=pub_key_b,
         outblock_transactions=local_blockchain2.outblock_transactions.copy(),
         chain=local_blockchain2.chain.copy(),
+        reward_amount=REWARD_AMOUNT,
     )
 
     local_blockchain2.add_block(new_block)
@@ -190,6 +193,7 @@ def test_usecase2():
         miner_public_key=pub_key_a,
         outblock_transactions=local_blockchain3.outblock_transactions.copy(),
         chain=local_blockchain3.chain.copy(),
+        reward_amount=REWARD_AMOUNT,
     )
     local_blockchain3.add_block(new_block)
     uc.update_chain(local_blockchain3.chain)
@@ -224,6 +228,7 @@ def test_usecase2():
         miner_public_key=pub_key_c,
         outblock_transactions=local_blockchain5.outblock_transactions.copy(),
         chain=local_blockchain5.chain.copy(),
+        reward_amount=REWARD_AMOUNT,
     )
     local_blockchain5.add_block(new_block)
     uc.update_chain(local_blockchain5.chain)
@@ -262,6 +267,7 @@ def test_usecase2():
         miner_public_key=pub_key_d,
         outblock_transactions=local_blockchain7.outblock_transactions.copy(),
         chain=local_blockchain7.chain.copy(),
+        reward_amount=REWARD_AMOUNT,
     )
     local_blockchain7.add_block(new_block)
     uc.update_chain(local_blockchain7.chain)

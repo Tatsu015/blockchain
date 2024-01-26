@@ -6,6 +6,7 @@ from pydantic import TypeAdapter
 from pydantic.json import pydantic_encoder
 from blockchain.domain.block import Block
 from blockchain.domain.blockchain import (
+    REWARD_AMOUNT,
     Blockchain,
     integrate_inblock_transactions,
     mining,
@@ -49,7 +50,7 @@ chain = fetch_chain(args.ip, args.port)
 outblock_transactions = fetch_outblock_transactions(args.ip, args.port)
 blockchain = Blockchain(outblock_transactions, chain)
 
-new_block = mining(miner_public_key, outblock_transactions, chain)
+new_block = mining(miner_public_key, outblock_transactions, chain, REWARD_AMOUNT)
 blockchain.add_block(new_block)
 data = json.dumps(blockchain.chain, default=pydantic_encoder)
 
