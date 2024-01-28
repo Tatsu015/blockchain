@@ -8,6 +8,7 @@ from blockchain.domain.blockchain import (
     mining,
 )
 from blockchain.domain.chain_repository import ChainRepository
+from blockchain.domain.syncer import Syncer
 from blockchain.domain.transaction import Transaction, new_transaction
 from blockchain.domain.transaction_repository import TransactionRepository
 from blockchain.usecase.usecase import Usecase
@@ -47,11 +48,19 @@ class ChainRepositoryDummy(ChainRepository):
         pass
 
 
+class SyncerDummy(Syncer):
+    def bloadcast(self, _: Transaction):
+        pass
+
+
 def test_usecase1():
     remote_blockchain = Blockchain(outblock_transactions=[], chain=[])
 
     uc = Usecase(
-        remote_blockchain, TransactionRepositoryDummy(), ChainRepositoryDummy()
+        remote_blockchain,
+        TransactionRepositoryDummy(),
+        ChainRepositoryDummy(),
+        SyncerDummy(),
     )
 
     ###
@@ -151,7 +160,10 @@ def test_usecase1():
 def test_usecase2():
     remote_blockchain = Blockchain(outblock_transactions=[], chain=[])
     uc = Usecase(
-        remote_blockchain, TransactionRepositoryDummy(), ChainRepositoryDummy()
+        remote_blockchain,
+        TransactionRepositoryDummy(),
+        ChainRepositoryDummy(),
+        SyncerDummy(),
     )
 
     ###
