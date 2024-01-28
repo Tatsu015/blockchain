@@ -11,14 +11,21 @@ from blockchain.infrastructure.transaction_repository_impl import (
     TransactionRepositoryImpl,
 )
 from blockchain.usecase.usecase import Usecase
-from blockchain.settings import settings
+from blockchain.settings import Settings, settings
+
+
+def get_my_adress(settings: Settings) -> str:
+    # todo tmp impl
+    port = str(settings.port)
+    return f"127.0.0.1:{port}"
+
 
 print("settings:", settings)
 cached_dir = ".cache/" + str(settings.port)
 if not os.path.exists(cached_dir):
     os.makedirs(cached_dir)
 
-app = FastAPI()
+my_adress = get_my_adress()
 
 transaction_repo = TransactionRepositoryImpl(f"{cached_dir}/transactions.json")
 transactions = transaction_repo.load_transactios()
@@ -26,11 +33,13 @@ transactions = transaction_repo.load_transactios()
 chain_repo = ChainRepositoryImpl(f"{cached_dir}/chain.json")
 chain = chain_repo.load_chain()
 
-syncer = SyncerImpl()
-
 blockchain = Blockchain(outblock_transactions=transactions, chain=chain)
 
+syncer = SyncerImpl()
+
 usecase = Usecase(blockchain, transaction_repo, chain_repo, syncer)
+
+app = FastAPI()
 
 
 @app.exception_handler(RequestValidationError)
