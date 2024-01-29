@@ -25,7 +25,7 @@ cached_dir = ".cache/" + str(settings.port)
 if not os.path.exists(cached_dir):
     os.makedirs(cached_dir)
 
-my_adress = get_my_adress()
+my_adress = get_my_adress(settings)
 
 transaction_repo = TransactionRepositoryImpl(f"{cached_dir}/transactions.json")
 transactions = transaction_repo.load_transactios()

@@ -8,7 +8,10 @@ dev_reload:
 
 PHONY:dev_multi
 dev_multi:
-	(export PORT=8081 && poetry run uvicorn blockchain.main:app --port $$PORT) & (export PORT=8082 && poetry run uvicorn blockchain.main:app --port $$PORT) & (export PORT=8083 && poetry run uvicorn blockchain.main:app --port $$PORT)
+	(export PORT=8080 && poetry run uvicorn blockchain.main:app --port $$PORT) & \
+	(export PORT=8081 && poetry run uvicorn blockchain.main:app --port $$PORT) & \
+	(export PORT=8082 && poetry run uvicorn blockchain.main:app --port $$PORT) & \
+	(export PORT=8083 && poetry run uvicorn blockchain.main:app --port $$PORT)
 
 PHONY:dev_8081
 dev_8081:
