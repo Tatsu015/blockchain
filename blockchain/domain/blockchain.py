@@ -35,6 +35,8 @@ class Blockchain:
         if self._chain == []:
             self._chain = [FIRST_BLOCK]
 
+        self.replace(self._chain)
+
     @property
     def outblock_transactions(self) -> list[Transaction]:
         return self._outblock_transactions
