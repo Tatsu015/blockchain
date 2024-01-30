@@ -20,10 +20,6 @@ class TransactionVerifyError(Exception):
     pass
 
 
-class MiningError(Exception):
-    pass
-
-
 class Blockchain:
     def __init__(
         self, outblock_transactions: list[Transaction], chain: list[Block]
@@ -110,95 +106,10 @@ def verify(chain: list[Block]):
         raise TransactionVerifyError("minus amount exist")
 
 
-def mining(
-    miner_public_key: str,
-    outblock_transactions: list[Transaction],
-    chain: list[Block],
-    reward_amount: int,
-) -> Block:
-    if len(chain) < 1:
-        raise MiningError("empty chain not allowed")
-
-    verify(chain)
-
-    inblock_transactions = integrate_inblock_transactions(chain).copy()
-    unique_transactions = _remove_reuse_transactions(
-        outblock_transactions, inblock_transactions
-    )
-
-    copied_outblock_transactions = unique_transactions.copy()
-    copied_inblock_transactions = integrate_inblock_transactions(chain).copy()
-    for t in copied_outblock_transactions:
-        copied_inblock_transactions.append(t)
-        if has_minus_amount(copied_inblock_transactions):
-            outblock_transactions.remove(t)
-            copied_inblock_transactions.remove(t)
-
-    block = _find_new_block(
-        now=datetime.now(),
-        miner=miner_public_key,
-        outblock_transactions=outblock_transactions,
-        chain=chain,
-        reward_amount=reward_amount,
-    )
-
-    return block
-
-
-def _remove_reuse_transactions(
-    outblock_transactions: list[Transaction],
-    copied_inblock_transactions: list[Transaction],
-) -> list[Transaction]:
-    copied_outblock_transactions = outblock_transactions.copy()
-    for t in copied_outblock_transactions:
-        if t not in copied_inblock_transactions:
-            t.verify()
-            copied_inblock_transactions.append(t)
-        else:
-            outblock_transactions.remove(t)
-
-    return outblock_transactions.copy()
-
-
 def integrate_inblock_transactions(chain: list[Block]) -> list[Transaction]:
     block_transactions = [b.transactions for b in chain]
     all_transactions = list(iter_chain.from_iterable(block_transactions))
     return all_transactions
-
-
-def _find_new_block(
-    now: datetime,
-    miner: str,
-    outblock_transactions: list[Transaction],
-    chain: list[Block],
-    reward_amount: int,
-) -> Block:
-    reward_transaction = Transaction(
-        time=now,
-        sender=MINING_SENDER_KEY,
-        receiver=miner,
-        amount=reward_amount,
-        signature="none",
-    )
-    transactions = outblock_transactions.copy()
-    transactions.append(reward_transaction)
-    last_block = chain[-1]
-    last_block_hash = last_block.hash()
-    untimed_last_block = UntimedBlock(
-        transactions=transactions, hash_value=last_block_hash, nonce=0
-    )
-
-    while untimed_last_block.is_wrong_hash(POW_DIFFICULTY):
-        untimed_last_block.count_up_nonce()
-
-    block = Block(
-        time=datetime.now().isoformat(),
-        transactions=untimed_last_block.transactions,
-        hash_value=last_block_hash,
-        nonce=untimed_last_block.nonce,
-    )
-
-    return block
 
 
 def accounts(transactions: list[Transaction]) -> dict[str, int]:
