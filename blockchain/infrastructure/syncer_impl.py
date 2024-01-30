@@ -9,13 +9,6 @@ from blockchain.settings import settings
 class SyncerImpl(Syncer):
     def bloadcast(self, transaction: Transaction):
         hosts = list(filter(None, settings.hosts.split(",")))
-        # for host in hosts:
-        #     if host == settings.my_adress():
-        #         continue
-        #     url = "http://" + host + "/transaction/bloadcast"
-        #     data = jsonable_encoder(transaction)
-        #     requests.post(url, json=data)
-
         with ThreadPoolExecutor() as exector:
             for host in hosts:
                 if host == settings.my_adress():
