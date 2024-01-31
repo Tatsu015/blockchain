@@ -7,12 +7,9 @@ from blockchain.infrastructure.chain_repository_impl import ChainRepositoryImpl
 
 from blockchain.domain.transaction import new_transaction
 from blockchain.domain.blockchain import (
-    REWARD_AMOUNT,
     Blockchain,
-    MiningError,
     TransactionReuseError,
     integrate_inblock_transactions,
-    mining,
 )
 from blockchain.infrastructure.transaction_repository_impl import (
     TransactionRepositoryImpl,
