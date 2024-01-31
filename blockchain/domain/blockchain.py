@@ -1,7 +1,7 @@
 from datetime import datetime
 from itertools import chain as iter_chain
 
-from blockchain.domain.block import MINING_SENDER_KEY, Block, UntimedBlock
+from blockchain.domain.block import MINING_SENDER_KEY, Block
 from blockchain.domain.transaction import Transaction
 
 

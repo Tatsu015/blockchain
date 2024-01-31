@@ -3,8 +3,6 @@ from ecdsa import SigningKey, SECP256k1, VerifyingKey
 import binascii
 from pydantic import BaseModel
 
-from blockchain.domain.block import MINING_SENDER_KEY
-
 
 class NonPositiveAmountTransactionError(Exception):
     pass
@@ -67,14 +65,3 @@ def new_transaction(
         signature=s,
     )
     return t
-
-
-def new_reward_transaction(time: datetime, miner: str, amount: int) -> Transaction:
-    reward_transaction = Transaction(
-        time=time,
-        sender=MINING_SENDER_KEY,
-        receiver=miner,
-        amount=amount,
-        signature="none",
-    )
-    return reward_transaction
