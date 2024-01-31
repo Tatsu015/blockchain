@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from blockchain.domain.transaction import Transaction
+
 
 class TransactionRepository(ABC):
     @abstractmethod
@@ -7,5 +9,5 @@ class TransactionRepository(ABC):
         pass
 
     @abstractmethod
-    def save_transactions(self):
+    def save_transactions(self, transactions: list[Transaction]):
         pass

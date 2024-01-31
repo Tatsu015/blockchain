@@ -30,7 +30,9 @@ class Usecase:
             return e.value
 
         self._blockchain.add_transaction(transaction)
-        self._transaction_repository.save_transactions("transactions.json")
+        self._transaction_repository.save_transactions(
+            self._blockchain.outblock_transactions
+        )
         self._syncer.bloadcast(transaction)
         return "Transaction is posted"
 
@@ -41,7 +43,9 @@ class Usecase:
             return e.value
 
         self._blockchain.add_transaction(transaction)
-        self._transaction_repository.save_transactions("transactions.json")
+        self._transaction_repository.save_transactions(
+            self._blockchain.outblock_transactions
+        )
         return "Transaction is received"
 
     def get_chain(self) -> list[Block]:
@@ -53,8 +57,10 @@ class Usecase:
         try:
             verify(chain)
             self._blockchain.replace(chain)
-            self._chain_repository.save_chain("chain.json")
-            self._transaction_repository.save_transactions("transactions.json")
+            self._chain_repository.save_chain(self._blockchain.chain)
+            self._transaction_repository.save_transactions(
+                self._blockchain.outblock_transactions
+            )
             return "chain is posted"
 
         except Exception as e:
