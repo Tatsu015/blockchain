@@ -82,4 +82,4 @@ for host in hosts:
     url = f"http://{host}/chain"
     res = requests.post(url, data=data)
 
-    print("response:", res.text)
+    print(f"response {host}:", res.text)
