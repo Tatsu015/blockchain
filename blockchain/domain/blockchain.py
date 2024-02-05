@@ -49,6 +49,7 @@ class Blockchain:
     def inblock_transactions(self) -> list[Transaction]:
         return self._inblock_transactions
 
+    # TODO maybe delete
     @property
     def pow_difficulty(self) -> int:
         return self._pow_difficulty
@@ -61,6 +62,7 @@ class Blockchain:
     def chain(self, value):
         self._chain = value
 
+    # TODO maybe delete
     @pow_difficulty.setter
     def pow_difficulty(self, value):
         self._pow_difficulty = value
