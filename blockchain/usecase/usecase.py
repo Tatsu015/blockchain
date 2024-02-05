@@ -55,7 +55,8 @@ class Usecase:
         if len(chain) <= len(self._blockchain.chain):
             return "Received chain is ignored"
         try:
-            verify(chain)
+            pow_difficulty = verify(chain)
+            self._blockchain.pow_difficulty = pow_difficulty
             self._blockchain.replace(chain)
             self._chain_repository.save_chain(self._blockchain.chain)
             self._transaction_repository.save_transactions(

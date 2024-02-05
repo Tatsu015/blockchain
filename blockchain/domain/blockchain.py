@@ -5,6 +5,9 @@ from blockchain.domain.block import MINING_SENDER_KEY, Block
 from blockchain.domain.transaction import Transaction
 
 
+POW_DIFFICULTY_ORIGIN = 18
+POW_CHAINGE_BLOCK_NUM = 10
+POW_TARGET_SEC = 10
 POW_DIFFICULTY = 10
 REWARD_AMOUNT = 256
 FIRST_BLOCK = Block(
@@ -27,6 +30,7 @@ class Blockchain:
         self._outblock_transactions: list[Transaction] = outblock_transactions
         self._chain: list[Block] = chain
         self._inblock_transactions: list[Transaction] = []
+        self._pow_difficulty = POW_DIFFICULTY_ORIGIN
 
         if self._chain == []:
             self._chain = [FIRST_BLOCK]
@@ -45,6 +49,10 @@ class Blockchain:
     def inblock_transactions(self) -> list[Transaction]:
         return self._inblock_transactions
 
+    @property
+    def pow_difficulty(self) -> int:
+        return self._pow_difficulty
+
     @outblock_transactions.setter
     def outblock_transactions(self, value):
         self._outblock_transactions = value
@@ -52,6 +60,10 @@ class Blockchain:
     @chain.setter
     def chain(self, value):
         self._chain = value
+
+    @pow_difficulty.setter
+    def pow_difficulty(self, value):
+        self._pow_difficulty = value
 
     def add_transaction(self, transaction: Transaction):
         if (transaction not in self._outblock_transactions) and (
@@ -72,8 +84,26 @@ class Blockchain:
                 self._outblock_transactions.remove(transaction)
 
 
-def verify(chain: list[Block]):
+def get_pow_difficulty(blocks: list[Block], current_pow_difficulty: int) -> int:
+    ix = len(blocks) - 1
+    if ix - 1 % POW_CHAINGE_BLOCK_NUM == 0 and 1 < ix:
+        all_time = 0
+        for i in range(POW_CHAINGE_BLOCK_NUM):
+            all_time += (blocks[ix - i].time - blocks[ix - i - 1].time).total_seconds()
+
+        if all_time / POW_CHAINGE_BLOCK_NUM < POW_TARGET_SEC / 2:
+            current_pow_difficulty += 1
+        if (
+            1 < current_pow_difficulty
+            and POW_TARGET_SEC * 2 < all_time / POW_CHAINGE_BLOCK_NUM
+        ):
+            current_pow_difficulty -= 1
+    return current_pow_difficulty
+
+
+def verify(chain: list[Block]) -> int:
     all_transactions = []
+    current_pow_difficulty = POW_DIFFICULTY_ORIGIN
     for i, now_block in enumerate(chain):
         if i == 0:
             if now_block != FIRST_BLOCK:
@@ -84,7 +114,10 @@ def verify(chain: list[Block]):
                 raise TransactionVerifyError("chain hash maybe falsificated")
 
             untime_now_block = now_block.to_untimed()
-            if untime_now_block.is_wrong_hash(POW_DIFFICULTY):
+            current_pow_difficulty = get_pow_difficulty(
+                chain[:i], current_pow_difficulty
+            )
+            if untime_now_block.is_wrong_hash(current_pow_difficulty):
                 raise TransactionVerifyError(
                     "chain not satisfy mining success condition"
                 )
@@ -104,6 +137,7 @@ def verify(chain: list[Block]):
 
     if has_minus_amount(transactions=all_transactions):
         raise TransactionVerifyError("minus amount exist")
+    return current_pow_difficulty
 
 
 def integrate_inblock_transactions(chain: list[Block]) -> list[Transaction]:
